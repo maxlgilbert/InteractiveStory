@@ -1,0 +1,87 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class AStar {
+
+	/// <summary>
+	/// List of nodes ordered by fValue
+	/// </summary>
+	private iSSortedList _sortedNodes;
+
+	/// <summary>
+	/// The max depth aStar searches before giving up.
+	/// </summary>
+	private int _maxDepth;
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="AStar"/> class.
+	/// </summary>
+	/// <param name="maxDepth">Max depth.</param>
+	public AStar (int maxDepth) {
+		_maxDepth = maxDepth;
+		_sortedNodes = new iSSortedList();
+	}
+
+	/// <summary>
+	/// Finds the path with aStar.
+	/// </summary>
+	/// <returns>The path.</returns>
+	/// <param name="start">Start.</param>
+	/// <param name="goal">Goal.</param>
+	public List<AStarNode> FindPath (AStarNode start, AStarNode goal) {
+		// Set curr to be the starting node
+		AStarNode curr = start;
+		curr.visited = true;
+		int depth = 0;
+		// Search through curr's neighbors and and set curr to best guess.
+		// If curr becomes the goal, stop, else keep looking through neighbors.
+		while (depth < _maxDepth && !curr.Equals(goal)) {
+			for (int i = 0; i < curr.GetNeighbors().Count; i++) {
+				AStarNode neighbor = curr.GetNeighbors()[i];
+				// Check if node is active.
+				if (neighbor.traversable) {
+					// Get projected actual distance travelled and estimated distance to goal.
+					float gValue = curr.distanceTraveled + curr.distance(neighbor);
+					float hValue = neighbor.estimate(goal);
+					// If node has not beem visited or the new combined fValue is lower
+					// add the node (or update its values) to the sorted list.
+					if (!neighbor.visited || neighbor.fValue  > gValue + hValue) {
+						neighbor.fValue = gValue + hValue;
+						neighbor.parent = curr;
+						neighbor.visited = true;
+						neighbor.distanceTraveled = gValue;
+						_sortedNodes.Add(neighbor);
+					}
+				}
+			}
+			// Get the node with lowest fValue (best guess).
+			curr = _sortedNodes.Pop();
+			if (curr == null) {
+				Debug.LogError("No more possibilites");
+				return null;
+			}
+			depth++;
+		}
+		// Create the list to return.
+		List<AStarNode> path = new List<AStarNode>();
+		path.Add(curr);
+		depth = 0;
+		// Populate the list with the destination node's parents.
+		while (depth < _maxDepth && curr.parent != null) {
+			curr = curr.parent;
+			path.Add(curr);
+			depth ++;
+		}
+		// Return the reverse of the path.
+		path.Reverse();
+		return path;
+	}
+
+	/// <summary>
+	/// Reset this instance of aStar.
+	/// </summary>
+	public void Reset () {
+		_sortedNodes = new iSSortedList();
+	}
+}
