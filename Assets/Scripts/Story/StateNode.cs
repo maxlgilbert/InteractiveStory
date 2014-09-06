@@ -18,25 +18,38 @@ public class StateNode : AStarNode {
 
 	public override bool Equals (AStarNode other)
 	{
-		bool equals = true;
 		StateNode otherState = other as StateNode;
 		for (int i = 0; i < 4; i++) {
-			if (emotionalState[i] > 0 && otherState.emotionalState[i] > 0) {
-				equals = (emotionalState[i] == otherState.emotionalState[i]);
+			if (emotionalState[i] >= 0 && otherState.emotionalState[i] >= 0) {
+				if (emotionalState[i] != otherState.emotionalState[i]) {
+					return false;
+				}
 			}
 		}
-		return equals;
+		return true;
 	}
 
 	public override float distance (AStarNode other)
 	{
 		StateNode otherState = other as StateNode;
-		return (emotionalState-otherState.emotionalState).sqrMagnitude;
+		float distance = 0.0f;
+		for (int i = 0; i < 4; i++) {
+			if (emotionalState[i] >= 0 && otherState.emotionalState[i] >= 0) {
+				distance += Mathf.Abs (emotionalState[i] - otherState.emotionalState[i]);
+			}
+		}
+		return distance;
 	}
 
 	public override float estimate (AStarNode other)
 	{
 		StateNode otherState = other as StateNode;
-		return (emotionalState-otherState.emotionalState).sqrMagnitude;
+		float distance = 0.0f;
+		for (int i = 0; i < 4; i++) {
+			if (emotionalState[i] >= 0 && otherState.emotionalState[i] >= 0) {
+				distance += Mathf.Abs (emotionalState[i] - otherState.emotionalState[i]);
+			}
+		}
+		return distance;
 	}
 }

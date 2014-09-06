@@ -54,6 +54,7 @@ public class AStarNode : MonoBehaviour {
 	/// </summary>
 	/// <returns>The neighbors.</returns>
 	public List<AStarNode> GetNeighbors (){
+		UpdateNeighbors();
 		return _neighbors;
 	}
 

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class StateStory : MonoBehaviour {
 
 	public int maxDepth;
-	public StateNode node;
-	public StateNode sad;
-	public StateNode happy;
+	public StateNode start;
+	public StateNode goal;
+	public StateNode statePrefab;
 	private AStar _aStar;
 
 	public List<AStarAction> actions;
@@ -31,22 +31,17 @@ public class StateStory : MonoBehaviour {
 	}
 
 	public void UpdateNeighbors () {
-		node.UpdateNeighbors();
-		sad.UpdateNeighbors();
-		happy.UpdateNeighbors();
+		start.UpdateNeighbors();
+		goal.UpdateNeighbors();
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.R)) {
-			foreach (AStarNode node in _aStar.FindPath (sad, happy)) {
+			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
 				StateNode happyState = node as StateNode;
-				if (happyState.happy) {
-					Debug.LogError("Now I am happy.");
-				} else {
-					Debug.LogError("I am sad.");
-				}
+				Debug.LogError(happyState.emotionalState);
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.C)) {
@@ -57,8 +52,8 @@ public class StateStory : MonoBehaviour {
 	
 	
 	public void clearPath () {
-		sad.clear();
-		happy.clear();
+		start.clear();
+		goal.clear();
 		_aStar.Reset();
 		
 	}

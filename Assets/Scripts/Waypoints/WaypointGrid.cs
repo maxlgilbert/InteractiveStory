@@ -131,7 +131,7 @@ public class WaypointGrid : MonoBehaviour {
 			i++;
 		}
 
-		if (Input.GetKeyDown(KeyCode.R)) {
+		if (Input.GetKeyDown(KeyCode.W)) {
 			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
 				_lineToDraw.Add(node.gameObject.transform.position);
 			}
