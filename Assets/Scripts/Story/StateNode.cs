@@ -9,6 +9,8 @@ public class StateNode : AStarNode {
 	}
 
 	public bool happy;
+
+	public Vector4 emotionalState;
 	//Get from sad to happy node
 	//Just use one action for now -> define concept of action
 	//Print out action's name...
@@ -16,17 +18,25 @@ public class StateNode : AStarNode {
 
 	public override bool Equals (AStarNode other)
 	{
+		bool equals = true;
 		StateNode otherState = other as StateNode;
-		return (happy == otherState.happy);
+		for (int i = 0; i < 4; i++) {
+			if (emotionalState[i] > 0 && otherState.emotionalState[i] > 0) {
+				equals = (emotionalState[i] == otherState.emotionalState[i]);
+			}
+		}
+		return equals;
 	}
 
 	public override float distance (AStarNode other)
 	{
-		return 1.0f;
+		StateNode otherState = other as StateNode;
+		return (emotionalState-otherState.emotionalState).sqrMagnitude;
 	}
 
 	public override float estimate (AStarNode other)
 	{
-		return 1.0f;
+		StateNode otherState = other as StateNode;
+		return (emotionalState-otherState.emotionalState).sqrMagnitude;
 	}
 }
