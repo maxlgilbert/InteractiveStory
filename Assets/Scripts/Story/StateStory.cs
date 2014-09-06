@@ -41,7 +41,9 @@ public class StateStory : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.R)) {
 			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
 				StateNode happyState = node as StateNode;
-				Debug.LogError(happyState.emotionalState);
+				if (happyState.parentAction != null) {
+					Debug.LogError(happyState.parentAction.GetActionText());
+				}
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.C)) {

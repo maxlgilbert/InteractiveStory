@@ -28,6 +28,8 @@ public class AStarNode : MonoBehaviour {
 	/// </summary>
 	public AStarNode parent;
 
+	public AStarAction parentAction;
+
 	/// <summary>
 	/// Whether AStar has seen this node or not.
 	/// </summary>
@@ -43,6 +45,7 @@ public class AStarNode : MonoBehaviour {
 			foreach (AStarAction action in actions) {
 				AStarNode possilbeNeighbor = action.TryAction(this);
 				if (possilbeNeighbor != null) {
+					possilbeNeighbor.parentAction = action;
 					_neighbors.Add(possilbeNeighbor);
 				}
 			}

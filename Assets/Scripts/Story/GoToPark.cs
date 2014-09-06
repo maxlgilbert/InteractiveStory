@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GoToPark : StateAction {
+	public override string GetActionText ()
+	{
+		return "You went to the park.";
+	}
 	public override AStarNode TryAction (AStarNode curr)
 	{
 		//If meets requirements

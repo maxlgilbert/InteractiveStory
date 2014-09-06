@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class BecomeFriends : StateAction {
+	public override string GetActionText ()
+	{
+		return "You became friends!";
+	}
 	//Add virtual "Test" then generate neighbros if successful
 	public override AStarNode TryAction (AStarNode curr)
 	{

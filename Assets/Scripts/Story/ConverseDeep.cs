@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class ConverseDeep : StateAction {
+
+	public override string GetActionText ()
+	{
+		return "You had a deep conversation.";
+	}
 	public override AStarNode TryAction (AStarNode curr)
 	{
 		//If meets requirements
