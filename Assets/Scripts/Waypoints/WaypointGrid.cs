@@ -80,11 +80,6 @@ public class WaypointGrid : MonoBehaviour {
 			pt.x += 2.0f;
 			pt.z = -2.0f * (float)height/2.0f+1.0f;
 		}
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				allNodes[i,j].UpdateNeighbors();
-			}
-		}
 		/*for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				bool iMinusOne = (i - 1 >= 0);
@@ -118,6 +113,14 @@ public class WaypointGrid : MonoBehaviour {
 			}
 		}*/
 	}
+
+	public void UpdateNeighbors (){
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				allNodes[i,j].UpdateNeighbors();
+			}
+		}
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -127,6 +130,7 @@ public class WaypointGrid : MonoBehaviour {
 			_lineRenderer.SetPosition(i, _lineToDraw[i]);
 			i++;
 		}
+
 		if (Input.GetKeyDown(KeyCode.R)) {
 			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
 				_lineToDraw.Add(node.gameObject.transform.position);
@@ -134,6 +138,7 @@ public class WaypointGrid : MonoBehaviour {
 		}
 		if (Input.GetKeyDown(KeyCode.C)) {
 			clearPath ();
+			UpdateNeighbors();
 		}
 	}
 

@@ -27,6 +27,10 @@ public class StateStory : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		_aStar = new AStar(maxDepth);
+
+	}
+
+	public void UpdateNeighbors () {
 		node.UpdateNeighbors();
 		sad.UpdateNeighbors();
 		happy.UpdateNeighbors();
@@ -47,6 +51,7 @@ public class StateStory : MonoBehaviour {
 		}
 		if (Input.GetKeyDown(KeyCode.C)) {
 			clearPath();
+			UpdateNeighbors();
 		}
 	}
 	
