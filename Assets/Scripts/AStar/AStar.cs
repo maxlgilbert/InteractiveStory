@@ -96,5 +96,6 @@ public class AStar {
 	/// </summary>
 	public void Reset () {
 		_sortedNodes = new iSSortedList();
+		_visitedNodes = new List<AStarNode>();
 	}
 }
