@@ -6,6 +6,7 @@ public class StateStory : MonoBehaviour {
 
 	public int maxDepth;
 	public StateObject protagonist;
+	private StateObject _selectedObject;
 	//public StateObject goal;
 	private StateNode _start;
 	private StateNode _goal;
@@ -27,6 +28,8 @@ public class StateStory : MonoBehaviour {
 	private Dictionary<int,string> stateMap;
 
 	private List<AStarNode> _plan;
+	public Material green;
+	public Material red;
 
 	public string storyBoardText{
 		get {
@@ -44,6 +47,20 @@ public class StateStory : MonoBehaviour {
 			returnString += printState;
 			return returnString;
 		}
+	}
+
+	public string initialStateText {
+		get {
+			string returnString = "";
+			returnString += "Initial State:\n";
+			returnString += StateToString(_globalState);
+			returnString += _selectedObject.gameObject.name;
+			return returnString;
+		}
+	}
+
+	public void SetSelectedObject (StateObject stateObject) {
+		_selectedObject = stateObject;
 	}
 
 	public string StateToString (Dictionary<string,Vector4> state){
@@ -64,7 +81,7 @@ public class StateStory : MonoBehaviour {
 			}
 			keyNumber++;
 			if (keyNumber != state.Keys.Count){
-				printState += "; ";
+				printState += "\n";
 			}
 		}
 		printState += "\n";
@@ -95,6 +112,7 @@ public class StateStory : MonoBehaviour {
 				_goalMap.Add(goalObjects[i],goalStates[i]);
 			}
 		}
+		_selectedObject = protagonist;
 
 	}
 

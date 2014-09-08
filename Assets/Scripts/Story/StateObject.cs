@@ -13,6 +13,11 @@ public class StateObject : MonoBehaviour {
 	void Start () {
 		StateStory.Instance.AddStateObject (this);
 	}
+
+	void OnMouseDown () {
+		gameObject.renderer.material = StateStory.Instance.red;
+		StateStory.Instance.SetSelectedObject(this);
+	}
 	
 	// Update is called once per frame
 	void Update () {
