@@ -27,7 +27,6 @@ public class StateStory : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		_aStar = new AStar(maxDepth);
-
 	}
 
 	public void UpdateNeighbors () {

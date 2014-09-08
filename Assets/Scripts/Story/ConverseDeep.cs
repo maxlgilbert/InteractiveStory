@@ -13,14 +13,14 @@ public class ConverseDeep : StateAction {
 		//If meets requirements
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.emotionalState.z<=.5) {
+		if (currState.globalState[currState.stateName].z<=.5) {
 			neighbor = Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;
-			neighbor.emotionalState = new Vector4(currState.emotionalState.x,
-			                                      currState.emotionalState.y,
-			                                      currState.emotionalState.z,
-			                                      currState.emotionalState.w+.3f);
+			neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x,
+			                                      currState.globalState[currState.stateName].y,
+			                                      currState.globalState[currState.stateName].z,
+			                                      currState.globalState[currState.stateName].w+.3f);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}

@@ -13,14 +13,14 @@ public class BecomeFriends : StateAction {
 		//If meets requirements
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.emotionalState.y<=.5 && currState.emotionalState.w>=.5) {
+		if (currState.globalState[currState.stateName].y<=.5 && currState.globalState[currState.stateName].w>=.5) {
 			neighbor = Instantiate(StateStory.Instance.statePrefab,
 			                                 new Vector3(),
 			                                 Quaternion.identity) as StateNode;
-			neighbor.emotionalState = new Vector4(currState.emotionalState.x+.5f,
-			                                      currState.emotionalState.y,
-			                                      currState.emotionalState.z,
-			                                      currState.emotionalState.w);
+			neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
+			                                      currState.globalState[currState.stateName].y,
+			                                      currState.globalState[currState.stateName].z,
+			                                      currState.globalState[currState.stateName].w);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}
