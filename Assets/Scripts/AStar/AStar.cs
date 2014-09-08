@@ -9,6 +9,8 @@ public class AStar {
 	/// </summary>
 	private iSSortedList _sortedNodes;
 
+	private List<AStarNode> _visitedNodes;
+
 	/// <summary>
 	/// The max depth aStar searches before giving up.
 	/// </summary>
@@ -21,6 +23,7 @@ public class AStar {
 	public AStar (int maxDepth) {
 		_maxDepth = maxDepth;
 		_sortedNodes = new iSSortedList();
+		_visitedNodes = new List<AStarNode> ();
 	}
 
 	/// <summary>
@@ -37,21 +40,31 @@ public class AStar {
 		// Search through curr's neighbors and and set curr to best guess.
 		// If curr becomes the goal, stop, else keep looking through neighbors.
 		while (depth < _maxDepth && !curr.Equals(goal)) {
+			// Add the current node to visited nodes
+			_visitedNodes.Add(curr);
 			for (int i = 0; i < curr.GetNeighbors().Count; i++) {
 				AStarNode neighbor = curr.GetNeighbors()[i];
-				// Check if node is active.
+				// Check if node is active or has been visited.
 				if (neighbor.traversable) {
-					// Get projected actual distance travelled and estimated distance to goal.
-					float gValue = curr.distanceTraveled + curr.distance(neighbor);
-					float hValue = neighbor.estimate(goal);
-					// If node has not beem visited or the new combined fValue is lower
-					// add the node (or update its values) to the sorted list.
-					if (!neighbor.visited || neighbor.fValue  > gValue + hValue) {
-						neighbor.fValue = gValue + hValue;
-						neighbor.parent = curr;
-						neighbor.visited = true;
-						neighbor.distanceTraveled = gValue;
-						_sortedNodes.Add(neighbor);
+					bool visited = false;
+					for (int j = 0; j < _visitedNodes.Count; j++) {
+						if (neighbor.Equals(_visitedNodes[j])) {
+							visited = true;
+						}
+					}
+					if (!visited) {
+						// Get projected actual distance travelled and estimated distance to goal.
+						float gValue = curr.distanceTraveled + curr.distance(neighbor);
+						float hValue = neighbor.estimate(goal);
+						// If node has not beem visited or the new combined fValue is lower
+						// add the node (or update its values) to the sorted list.
+						if (!neighbor.visited || neighbor.fValue  > gValue + hValue) {
+							neighbor.fValue = gValue + hValue;
+							neighbor.parent = curr;
+							neighbor.visited = true;
+							neighbor.distanceTraveled = gValue;
+							_sortedNodes.Add(neighbor);
+						}
 					}
 				}
 			}

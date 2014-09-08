@@ -17,10 +17,11 @@ public class ConverseDeep : StateAction {
 			neighbor = new StateNode(currState.globalState);/*Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;*/
-			neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x,
+			/*neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x,
 			                                      currState.globalState[currState.stateName].y,
 			                                      currState.globalState[currState.stateName].z,
-			                                      currState.globalState[currState.stateName].w+.3f);
+			                                      currState.globalState[currState.stateName].w+.3f);*/
+			neighbor.SetState(currState.stateName,0,0,0,.3f);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}

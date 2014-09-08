@@ -17,12 +17,22 @@ public class BecomeFriends : StateAction {
 			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 			                                 new Vector3(),
 			                                 Quaternion.identity) as StateNode;*/
-			neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
+			/*neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
 			                                      currState.globalState[currState.stateName].y,
 			                                      currState.globalState[currState.stateName].z,
-			                                      currState.globalState[currState.stateName].w);
+			                                      currState.globalState[currState.stateName].w);*/
+
+			
+			neighbor.SetState(currState.stateName,.5f,0,0,0);
 			
 			neighbor.actions=StateStory.Instance.actions;
+			string friendName = StateStory.Instance.roles[Role.Character][0];
+			/*neighbor.globalState[friendName] = new Vector4(currState.globalState[friendName].x+.3f,
+			                                                                                 currState.globalState[friendName].y,
+			                                                                                 currState.globalState[friendName].z,
+			                                                                                 currState.globalState[friendName].w);*/
+			
+			neighbor.SetState(friendName,.5f,0,0,0);
 		}
 		//Update neighbor??????
 		return neighbor;

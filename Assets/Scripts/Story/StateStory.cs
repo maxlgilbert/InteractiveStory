@@ -17,6 +17,8 @@ public class StateStory : MonoBehaviour {
 	private static StateStory instance;
 
 	private Dictionary<string,Vector4> _globalState;
+
+	public Dictionary<Role,List<string>> roles;
 	
 	public static StateStory Instance
 	{
@@ -28,10 +30,18 @@ public class StateStory : MonoBehaviour {
 	void Awake() {
 		instance = this;
 		_globalState = new Dictionary<string, Vector4> ();
+		roles = new Dictionary<Role, List<string>> ();
 	}
 
 	public void AddStateObject (StateObject stateObject) {
 		_globalState.Add (stateObject.name, stateObject.emotionalState);
+		if (roles.ContainsKey(stateObject.role)) {
+			roles[stateObject.role].Add(stateObject.gameObject.name);
+		} else {
+			List<string> names = new List<string>();
+			names.Add (stateObject.gameObject.name);
+			roles[stateObject.role] = names;
+		}
 	}
 	// Use this for initialization
 	void Start () {
@@ -57,9 +67,13 @@ public class StateStory : MonoBehaviour {
 			UpdateNeighbors();
 			foreach (AStarNode node in _aStar.FindPath (_start, _goal)) {
 				StateNode happyState = node as StateNode;
+				string printState = "";
 				if (happyState.parentAction != null) {
-					Debug.LogError(happyState.globalState["Protagonist"]);
 					Debug.LogError(happyState.parentAction.GetActionText());
+					foreach (string key in _start.globalState.Keys) {
+						printState += (key + ": " + happyState.globalState[key] + " ");
+					}
+					Debug.LogError(printState);
 				}
 			}
 		}

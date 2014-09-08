@@ -35,14 +35,36 @@ public class StateNode : AStarNode {
 	//Just use one action for now -> define concept of action
 	//Print out action's name...
 	//Add state needed for action...
-
+	public void SetState (string stateChange, float x, float y, float z, float w) {
+		float newX = globalState [stateChange].x + x;
+		float newY = globalState [stateChange].y + y;
+		float newZ = globalState [stateChange].z + z;
+		float newW = globalState [stateChange].w + w;
+		if (newX < 0.0f) newX = 0.0f;
+		if (newX > 1.0f) newX = 1.0f;
+		if (newY < 0.0f) newY = 0.0f;
+		if (newY > 1.0f) newY = 1.0f;
+		if (newZ < 0.0f) newZ = 0.0f;
+		if (newZ > 1.0f) newZ = 1.0f;
+		if (newW < 0.0f) newW = 0.0f;
+		if (newW > 1.0f) newW = 1.0f;
+		if (globalState [stateChange].x < 0.0f) newX = -1.0f;
+		if (globalState [stateChange].y < 0.0f) newY = -1.0f;
+		if (globalState [stateChange].z < 0.0f) newZ = -1.0f;
+		if (globalState [stateChange].w < 0.0f) newW = -1.0f;
+		globalState [stateChange] = new Vector4 (newX, newY, newZ, newW);
+	}
 	public override bool Equals (AStarNode other)
 	{
 		StateNode otherState = other as StateNode;
-		for (int i = 0; i < 4; i++) {
-			if (globalState[stateName][i] >= 0 && otherState.globalState[stateName][i] >= 0) {
-				if (globalState[stateName][i] != otherState.globalState[stateName][i]) {
-					return false;
+		
+		//TODO Go both ways? 
+		foreach (string key in globalState.Keys) {
+			for (int i = 0; i < 4; i++) {
+				if (globalState[key][i] >= 0 && otherState.globalState[key][i] >= 0) {
+					if (globalState[key][i] != otherState.globalState[key][i]) {
+						return false;
+					}
 				}
 			}
 		}
@@ -53,9 +75,12 @@ public class StateNode : AStarNode {
 	{
 		StateNode otherState = other as StateNode;
 		float distance = 0.0f;
-		for (int i = 0; i < 4; i++) {
-			if (globalState[stateName][i] >= 0 && otherState.globalState[stateName][i] >= 0) {
-				distance += Mathf.Abs (globalState[stateName][i] - otherState.globalState[stateName][i]);
+		//TODO Go both ways? 
+		foreach (string key in globalState.Keys) {
+			for (int i = 0; i < 4; i++) {
+				if (globalState[key][i] >= 0 && otherState.globalState[key][i] >= 0) {
+					distance += Mathf.Abs (globalState[key][i] - otherState.globalState[key][i]);
+				}
 			}
 		}
 		return distance;
@@ -65,9 +90,12 @@ public class StateNode : AStarNode {
 	{
 		StateNode otherState = other as StateNode;
 		float distance = 0.0f;
-		for (int i = 0; i < 4; i++) {
-			if (globalState[stateName][i] >= 0 && otherState.globalState[stateName][i] >= 0) {
-				distance += Mathf.Abs (globalState[stateName][i] - otherState.globalState[stateName][i]);
+		//TODO Go both ways? 
+		foreach (string key in globalState.Keys) {
+			for (int i = 0; i < 4; i++) {
+				if (globalState[key][i] >= 0 && otherState.globalState[key][i] >= 0) {
+					distance += Mathf.Abs (globalState[key][i] - otherState.globalState[key][i]);
+				}
 			}
 		}
 		return distance;
