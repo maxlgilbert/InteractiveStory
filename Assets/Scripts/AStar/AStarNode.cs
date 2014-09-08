@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// Base class for a node that AStar can search paths along.
 /// Inherit and overrid functions and fields to implement
 /// </summary>
-public class AStarNode : MonoBehaviour {
+public class AStarNode {
 
 	/// <summary>
 	/// Whether or not this node is free.
@@ -67,7 +67,7 @@ public class AStarNode : MonoBehaviour {
 	/// <param name="other">The <see cref="AStarNode"/> to compare with the current <see cref="AStarNode"/>.</param>
 	/// <returns><c>true</c> if the specified <see cref="AStarNode"/> is equal to the current <see cref="AStarNode"/>; otherwise, <c>false</c>.</returns>
 	public virtual bool Equals (AStarNode other) {
-		return (this.gameObject.transform.position == other.gameObject.transform.position);
+		return true;//(this.gameObject.transform.position == other.gameObject.transform.position);
 	}
 
 	/// <summary>
@@ -75,7 +75,7 @@ public class AStarNode : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">Other.</param>
 	public virtual float distance (AStarNode other) {
-		return Vector3.Distance(this.gameObject.transform.position,other.gameObject.transform.position);
+		return 0.0f;//Vector3.Distance(this.gameObject.transform.position,other.gameObject.transform.position);
 	}
 
 	/// <summary>
@@ -83,7 +83,7 @@ public class AStarNode : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">Other.</param>
 	public virtual float estimate (AStarNode other) {
-		return Vector3.Distance(this.gameObject.transform.position,other.gameObject.transform.position);
+		return 0.0f;//Vector3.Distance(this.gameObject.transform.position,other.gameObject.transform.position);
 	}
 
 	/// <summary>

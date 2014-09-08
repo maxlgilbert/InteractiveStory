@@ -65,7 +65,7 @@ public class WaypointGrid : MonoBehaviour {
 		Vector3 pt = new Vector3(-2.0f * (float)width/2.0f + 1.0f, 0.0f, -2.0f * (float)height/2.0f+1.0f);
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				WaypointNode newNode =  Instantiate (node, pt, Quaternion.identity) as WaypointNode;
+				WaypointNode newNode =  new WaypointNode();//Instantiate (node, pt, Quaternion.identity) as WaypointNode;
 				newNode.i = i;
 				newNode.j = j;
 				allNodes[i,j] = newNode;
@@ -133,7 +133,7 @@ public class WaypointGrid : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.W)) {
 			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
-				_lineToDraw.Add(node.gameObject.transform.position);
+//				_lineToDraw.Add(node.gameObject.transform.position);
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.C)) {

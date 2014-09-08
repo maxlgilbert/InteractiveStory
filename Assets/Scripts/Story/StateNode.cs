@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class StateNode : AStarNode {
-	void Awake () {
+	/*void Awake () {
 		globalState = new Dictionary<string, Vector4> ();
 		stateName = "global";
 		globalState[stateName] = emotionalState;
@@ -11,6 +11,17 @@ public class StateNode : AStarNode {
 
 	void Start () {
 		actions = StateStory.Instance.actions;
+	}*/
+
+	public StateNode (Dictionary<string,Vector4> state) {
+		actions = StateStory.Instance.actions;
+		globalState = new Dictionary<string, Vector4> ();
+		
+		foreach (string key in state.Keys) {
+			globalState[key] = state[key];
+		}
+		stateName = "Protagonist";
+
 	}
 
 	public bool happy;

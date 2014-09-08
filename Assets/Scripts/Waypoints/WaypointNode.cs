@@ -46,9 +46,9 @@ public class WaypointNode : AStarNode {
 	
 	public void setTraversable() {
 		if (traversable) {
-			gameObject.renderer.material = red;
+		//	gameObject.renderer.material = red;
 		} else {
-			gameObject.renderer.material = green;
+		//	gameObject.renderer.material = green;
 		}
 		traversable = !traversable;
 	}

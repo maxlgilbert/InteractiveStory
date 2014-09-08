@@ -14,9 +14,9 @@ public class BecomeFriends : StateAction {
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
 		if (currState.globalState[currState.stateName].y<=.5 && currState.globalState[currState.stateName].w>=.5) {
-			neighbor = Instantiate(StateStory.Instance.statePrefab,
+			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 			                                 new Vector3(),
-			                                 Quaternion.identity) as StateNode;
+			                                 Quaternion.identity) as StateNode;*/
 			neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
 			                                      currState.globalState[currState.stateName].y,
 			                                      currState.globalState[currState.stateName].z,
