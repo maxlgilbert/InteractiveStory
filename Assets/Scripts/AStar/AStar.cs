@@ -71,7 +71,7 @@ public class AStar {
 			// Get the node with lowest fValue (best guess).
 			curr = _sortedNodes.Pop();
 			if (curr == null) {
-				Debug.LogError("No more possibilites");
+				Debug.Log("No more possibilites");
 				return null;
 			}
 			depth++;

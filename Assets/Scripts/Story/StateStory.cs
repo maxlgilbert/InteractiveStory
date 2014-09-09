@@ -34,6 +34,8 @@ public class StateStory : MonoBehaviour {
 	public Material red;
 
 	public float adjustorIncrement;
+
+	private bool _failedPath;
 	
 	void Awake() {
 		instance = this;
@@ -54,6 +56,7 @@ public class StateStory : MonoBehaviour {
 		_selectedObject = protagonist;
 		_stateObjects = new List<StateObject> ();
 		selectedState = 0;
+		_failedPath = false;
 		
 	}
 
@@ -75,15 +78,20 @@ public class StateStory : MonoBehaviour {
 			string returnString = "";
 			returnString += "Goal: Get to a state of ";
 			returnString += StateToString(_goalMap);
-			string printState = "";
-			foreach (AStarNode node in _plan) {
-				StateNode happyState = node as StateNode;
-				if (happyState.parentAction != null) {
-					printState += happyState.parentAction.GetActionText() + "\n";
-					printState += StateToString( happyState.globalState);
+			if (!_failedPath) {
+				string printState = "";
+				foreach (AStarNode node in _plan) {
+					StateNode happyState = node as StateNode;
+					if (happyState.parentAction != null) {
+						printState += happyState.parentAction.GetActionText() + "\n";
+						printState += StateToString( happyState.globalState);
+					}
 				}
+				returnString += printState;
+			} else {
+				returnString += "No possible path from this state!\n" +
+					"Try adjusting the initial state.";
 			}
-			returnString += printState;
 			return returnString;
 		}
 	}
@@ -186,6 +194,11 @@ public class StateStory : MonoBehaviour {
 		_goal = new StateNode(goalState);
 		UpdateNeighbors();
 		_plan = _aStar.FindPath (_start, _goal);
+		_failedPath = false;
+		if (_plan == null) {
+			_failedPath = true;
+			clearPath();
+		}
 	}
 	
 	public void UpdateNeighbors () {
