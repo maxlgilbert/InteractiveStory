@@ -15,12 +15,19 @@ public class StateObject : MonoBehaviour {
 	}
 
 	void OnMouseDown () {
-		gameObject.renderer.material = StateStory.Instance.red;
 		StateStory.Instance.SetSelectedObject(this);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public void Select () {
+		gameObject.renderer.material = StateStory.Instance.green;
+	}
+
+	public void Deselect () {
+		gameObject.renderer.material = StateStory.Instance.red;
 	}
 }
