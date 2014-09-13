@@ -16,6 +16,8 @@ public class AStar {
 	/// </summary>
 	private int _maxDepth;
 
+	public bool reachedGoal;
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="AStar"/> class.
 	/// </summary>
@@ -37,6 +39,9 @@ public class AStar {
 		AStarNode curr = start;
 		curr.visited = true;
 		int depth = 0;
+		// Initialize the "closest to goal" node
+		AStarNode closestNode = start;
+		reachedGoal = true;
 		// Search through curr's neighbors and and set curr to best guess.
 		// If curr becomes the goal, stop, else keep looking through neighbors.
 		while (depth < _maxDepth && !curr.Equals(goal)) {
@@ -64,22 +69,34 @@ public class AStar {
 							neighbor.visited = true;
 							neighbor.distanceTraveled = gValue;
 							_sortedNodes.Add(neighbor);
+							if (hValue > closestNode.hValue) {
+								closestNode = neighbor;
+							}
 						}
 					}
 				}
 			}
 			// Get the node with lowest fValue (best guess).
-			curr = _sortedNodes.Pop();
-			if (curr == null) {
-				Debug.Log("No more possibilites");
-				return null;
+			if (_sortedNodes.Count() > 0) {
+				curr = _sortedNodes.Pop();
+			} else {
+				return RetrievePath(closestNode);
 			}
 			depth++;
 		}
+		if (!curr.Equals(goal)) {
+			Debug.LogError("here 2");
+			return RetrievePath(closestNode);
+		}
+		return RetrievePath(curr);
+	}
+
+	private List<AStarNode> RetrievePath (AStarNode node) {
 		// Create the list to return.
 		List<AStarNode> path = new List<AStarNode>();
+		AStarNode curr = node;
 		path.Add(curr);
-		depth = 0;
+		int depth = 0;
 		// Populate the list with the destination node's parents.
 		while (depth < _maxDepth && curr.parent != null) {
 			curr = curr.parent;

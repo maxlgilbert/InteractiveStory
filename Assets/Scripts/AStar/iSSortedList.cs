@@ -8,6 +8,9 @@ public class iSSortedList {
 	}
 	private List<AStarNode> _internalList;
 
+	public int Count () {
+		return _internalList.Count;
+	}
 	public void Add (AStarNode element) {
 		int i = 0;
 		for (i = 0; i < _internalList.Count; i++) {

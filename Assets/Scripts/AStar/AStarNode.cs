@@ -22,6 +22,8 @@ public class AStarNode {
 	/// Total AStar score.
 	/// </summary>
 	public float fValue = 0.0f;
+
+	public float hValue = 0.0f;
 	
 	/// <summary>
 	/// The parent node.

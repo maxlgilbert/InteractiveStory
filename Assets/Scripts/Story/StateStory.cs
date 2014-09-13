@@ -36,6 +36,10 @@ public class StateStory : MonoBehaviour {
 	public float adjustorIncrement;
 
 	private bool _failedPath;
+
+	public Dictionary<string,Dictionary<int,int>> numberOfMoves;
+
+	public int availableMoves;
 	
 	void Awake() {
 		instance = this;
@@ -57,6 +61,8 @@ public class StateStory : MonoBehaviour {
 		_stateObjects = new List<StateObject> ();
 		selectedState = 0;
 		_failedPath = false;
+		numberOfMoves = new Dictionary<string, Dictionary<int, int>>();
+
 		
 	}
 
@@ -72,7 +78,19 @@ public class StateStory : MonoBehaviour {
 			clearPath();
 		}
 	}
-
+	
+	
+	public int movesLeft {
+		get {
+			int moves = 0;
+			foreach (string key in numberOfMoves.Keys) {
+				for (int i = 0; i < 4; i ++) {
+					moves += (int) Mathf.Abs(numberOfMoves[key][i]);
+				}
+			}
+			return availableMoves - moves;
+		}
+	}
 	public string storyBoardText{
 		get {
 			string returnString = "";
@@ -92,6 +110,9 @@ public class StateStory : MonoBehaviour {
 				returnString += "No possible path from this state!\n" +
 					"Try adjusting the initial state.";
 			}
+			if (_plan.Count == 0 || !_plan[_plan.Count - 1].Equals(_goal)){
+				returnString += "Goal is not possible, try adjusting the states!";
+			}
 			return returnString;
 		}
 	}
@@ -99,6 +120,7 @@ public class StateStory : MonoBehaviour {
 	public string initialStateText {
 		get {
 			string returnString = "";
+			returnString += "Moves available: " + this.movesLeft + "\n";
 			returnString += "Initial State:\n";
 			returnString += StateToString(_globalState);
 			returnString += "Selected object: " + _selectedObject.gameObject.name;
@@ -118,11 +140,16 @@ public class StateStory : MonoBehaviour {
 		_selectedObject = stateObject;
 	}
 
-	public void ChangeStateOfObject (StateObject stateObject, float x, float y, float z, float w) {
+	public bool ChangeStateOfObject (StateObject stateObject, float x, float y, float z, float w) {
+		bool successfulChange = true;
 		float newX = _globalState [stateObject.gameObject.name].x + x;
 		float newY = _globalState [stateObject.gameObject.name].y + y;
 		float newZ = _globalState [stateObject.gameObject.name].z + z;
 		float newW = _globalState [stateObject.gameObject.name].w + w;
+		if (newX < 0 || newX < 0 || newX < 0 || newX < 0 ||
+		    newX > 1.0f || newX > 1.0f || newX > 1.0f || newX > 1.0f) {
+			successfulChange = false;
+		}
 		if (newX < 0.0f) newX = 0.0f;
 		if (newX > 1.0f) newX = 1.0f;
 		if (newY < 0.0f) newY = 0.0f;
@@ -137,6 +164,7 @@ public class StateStory : MonoBehaviour {
 		if (_globalState [stateObject.gameObject.name].w < 0.0f) newW = -1.0f;
 		_globalState [stateObject.gameObject.name] = new Vector4 (newX, newY, newZ, newW);
 		stateObject.emotionalState = new Vector4 (newX, newY, newZ, newW);
+		return successfulChange;
 	}
 
 	public string StateToString (Dictionary<string,Vector4> state){
@@ -182,6 +210,10 @@ public class StateStory : MonoBehaviour {
 			List<string> names = new List<string>();
 			names.Add (stateObject.gameObject.name);
 			roles[stateObject.role] = names;
+		}
+		numberOfMoves[stateObject.name] = new Dictionary<int, int>();
+		for (int i = 0; i < 4; i++) {
+			numberOfMoves[stateObject.name][i] = 0;
 		}
 	}
 	public void StartStory () {
