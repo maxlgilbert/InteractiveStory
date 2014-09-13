@@ -18,7 +18,7 @@ public class WaypointAction : AStarAction {
 
 	public Direction direction;
 
-	public override AStarNode TryAction (AStarNode curr)
+	/*public override AStarNode TryAction (AStarNode curr)
 	{
 		WaypointNode node = curr as WaypointNode;
 		int i = node.i;
@@ -53,5 +53,5 @@ public class WaypointAction : AStarAction {
 		}
 		return null;
 		
-	}
+	}*/
 }

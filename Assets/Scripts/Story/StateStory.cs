@@ -100,8 +100,8 @@ public class StateStory : MonoBehaviour {
 				string printState = "";
 				foreach (AStarNode node in _plan) {
 					StateNode happyState = node as StateNode;
-					if (happyState.parentAction != null) {
-						printState += happyState.parentAction.GetActionText() + "\n";
+					if (happyState.parentActions != null && happyState.parentActions.Count != 0) {
+						printState += happyState.parentActions[happyState.parentActions.Count-1] + "\n";
 						printState += StateToString( happyState.globalState);
 					}
 				}

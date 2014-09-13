@@ -5,36 +5,73 @@ using System.Collections.Generic;
 public class BecomeFriends : StateAction {
 	public override string GetActionText ()
 	{
-		return "You became friends!";
+		return "You became friends with ";
 	}
 	//Add virtual "Test" then generate neighbros if successful
-	public override AStarNode TryAction (AStarNode curr)
+	public override List<AStarNode> TryAction (AStarNode curr)
 	{
 		//If meets requirements
+		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].y<=.5 && currState.globalState[currState.stateName].w>=.5) {
-			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
-			                                 new Vector3(),
-			                                 Quaternion.identity) as StateNode;*/
-			/*neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
-			                                      currState.globalState[currState.stateName].y,
-			                                      currState.globalState[currState.stateName].z,
-			                                      currState.globalState[currState.stateName].w);*/
 
-			
-			neighbor.SetState(currState.stateName,.5f,0,0,0);
-			
-			neighbor.actions=StateStory.Instance.actions;
-			string friendName = StateStory.Instance.roles[Role.Character][0];
-			/*neighbor.globalState[friendName] = new Vector4(currState.globalState[friendName].x+.3f,
-			                                                                                 currState.globalState[friendName].y,
-			                                                                                 currState.globalState[friendName].z,
-			                                                                                 currState.globalState[friendName].w);*/
-			
-			neighbor.SetState(friendName,.5f,0,0,0);
+
+		/*foreach (AStarNode possibleNeighbor in possibleNeighbors) {
+			if (possibleNeighbor != null) {
+				int numActions = 0;
+				for (int i  = 0; i < this.parentActions.Count; i++) {
+					possibleNeighbor.parentActions.Add(this.parentActions[i]);
+					if (this.parentActions[i] == action.GetActionText()) {
+						numActions++;
+					}
+				}
+				if (numActions < action.numberAvailable) {
+					possibleNeighbor.parentActions.Add(action.GetActionText());
+					_neighbors.Add(possibleNeighbor);
+				}
+			}
+		}*/
+
+
+
+		if (currState.globalState[currState.stateName].y<=.5 && currState.globalState[currState.stateName].w>=.5) {
+			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
+				string friendName = StateStory.Instance.roles[Role.Character][i];
+				if (currState.globalState[friendName].y<=.5 && currState.globalState[friendName].w>=.5) {
+					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
+					                                 new Vector3(),
+					                                 Quaternion.identity) as StateNode;*/
+					/*neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
+					                                      currState.globalState[currState.stateName].y,
+					                                      currState.globalState[currState.stateName].z,
+					                                      currState.globalState[currState.stateName].w);*/
+
+					
+					neighbor.SetState(currState.stateName,.5f,0,0,0);
+					
+					neighbor.actions=StateStory.Instance.actions;
+					/*neighbor.globalState[friendName] = new Vector4(currState.globalState[friendName].x+.3f,
+					                                                                                 currState.globalState[friendName].y,
+					                                                                                 currState.globalState[friendName].z,
+					                                                                                 currState.globalState[friendName].w);*/
+
+					neighbor.SetState(friendName,.5f,0,0,0);
+
+					int numActions = 0;
+					for (int j  = 0; j < curr.parentActions.Count; j++) {
+						neighbor.parentActions.Add(curr.parentActions[j]);
+						if (curr.parentActions[j] == (this.GetActionText() + friendName)) {
+							numActions++;
+						}
+					}
+					if (numActions < this.numberAvailable) {
+						neighbor.parentActions.Add(this.GetActionText() + friendName);
+						_possibleNeighbors.Add(neighbor);
+					}
+				}
+			}
 		}
 		//Update neighbor??????
-		return neighbor;
+		return _possibleNeighbors;
 	}
 }

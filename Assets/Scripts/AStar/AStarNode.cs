@@ -30,7 +30,7 @@ public class AStarNode {
 	/// </summary>
 	public AStarNode parent;
 
-	public AStarAction parentAction;
+	public List<string> parentActions;
 
 	/// <summary>
 	/// Whether AStar has seen this node or not.
@@ -41,15 +41,33 @@ public class AStarNode {
 
 	protected List<AStarNode> _neighbors;
 
+	public AStarNode () {
+		parentActions = new List<string>();
+	}
+
 	public void UpdateNeighbors () {
 		_neighbors = new List<AStarNode>();
 		if (actions != null) {
 			foreach (AStarAction action in actions) {
-				AStarNode possilbeNeighbor = action.TryAction(this);
-				if (possilbeNeighbor != null) {
-					possilbeNeighbor.parentAction = action;
-					_neighbors.Add(possilbeNeighbor);
+				List<AStarNode> possibleNeighbors = action.TryAction(this);
+				if (possibleNeighbors != null) {
+					_neighbors.AddRange(possibleNeighbors);
 				}
+				/*foreach (AStarNode possibleNeighbor in possibleNeighbors) {
+					if (possibleNeighbor != null) {
+						int numActions = 0;
+						for (int i  = 0; i < this.parentActions.Count; i++) {
+							possibleNeighbor.parentActions.Add(this.parentActions[i]);
+							if (this.parentActions[i] == action.GetActionText()) {
+								numActions++;
+							}
+						}
+						if (numActions < action.numberAvailable) {
+							possibleNeighbor.parentActions.Add(action.GetActionText());
+							_neighbors.Add(possibleNeighbor);
+						}
+					}
+				}*/
 			}
 		}
 	}

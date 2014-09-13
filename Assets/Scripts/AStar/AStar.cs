@@ -85,7 +85,6 @@ public class AStar {
 			depth++;
 		}
 		if (!curr.Equals(goal)) {
-			Debug.LogError("here 2");
 			return RetrievePath(closestNode);
 		}
 		return RetrievePath(curr);

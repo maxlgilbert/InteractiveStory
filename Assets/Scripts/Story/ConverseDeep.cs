@@ -8,9 +8,10 @@ public class ConverseDeep : StateAction {
 	{
 		return "You had a deep conversation.";
 	}
-	public override AStarNode TryAction (AStarNode curr)
+	public override List<AStarNode> TryAction (AStarNode curr)
 	{
 		//If meets requirements
+		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
 		if (currState.globalState[currState.stateName].z<=.5) {
@@ -25,6 +26,20 @@ public class ConverseDeep : StateAction {
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}
-		return neighbor;
+		if (neighbor != null) {
+			int numActions = 0;
+			for (int j  = 0; j < curr.parentActions.Count; j++) {
+				neighbor.parentActions.Add(curr.parentActions[j]);
+				if (curr.parentActions[j] == (this.GetActionText())) {
+					numActions++;
+				}
+			}
+			if (numActions < this.numberAvailable) {
+				neighbor.parentActions.Add(this.GetActionText());
+				_possibleNeighbors.Add(neighbor);
+			}
+		}
+		//_possibleNeighbors.Add(neighbor);
+		return _possibleNeighbors;
 	}
 }
