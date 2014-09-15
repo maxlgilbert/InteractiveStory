@@ -40,6 +40,8 @@ public class StateStory : MonoBehaviour {
 	public Dictionary<string,Dictionary<int,int>> numberOfMoves;
 
 	public int availableMoves;
+
+	private bool _triedPlan = false;
 	
 	void Awake() {
 		instance = this;
@@ -110,8 +112,10 @@ public class StateStory : MonoBehaviour {
 				returnString += "No possible path from this state!\n" +
 					"Try adjusting the initial state.";
 			}
-			if (_plan.Count == 0 || !_plan[_plan.Count - 1].Equals(_goal)){
+			if (_triedPlan && (_plan.Count == 0 || !_plan[_plan.Count - 1].Equals(_goal))){
 				returnString += "Goal is not possible, try adjusting the states!";
+			} else if (_triedPlan){
+				returnString += "You reached the goal!";
 			}
 			return returnString;
 		}
@@ -119,9 +123,9 @@ public class StateStory : MonoBehaviour {
 
 	public string initialStateText {
 		get {
-			string returnString = "";
+			string returnString = "Adjust the state:\n";
 			returnString += "Moves available: " + this.movesLeft + "\n";
-			returnString += "Initial State:\n";
+			returnString += "Current State:\n";
 			returnString += StateToString(_globalState);
 			returnString += "Selected object: " + _selectedObject.gameObject.name;
 			return returnString;
@@ -130,7 +134,7 @@ public class StateStory : MonoBehaviour {
 	
 	public string actionListText {
 		get {
-			string returnString = "";
+			string returnString = "Available actions:\n";
 			foreach (StateAction action in actions) {
 				returnString += action.ToString() + "\n";
 			}
@@ -235,6 +239,7 @@ public class StateStory : MonoBehaviour {
 		_goal = new StateNode(goalState);
 		UpdateNeighbors();
 		_plan = _aStar.FindPath (_start, _goal);
+		_triedPlan = true;
 		_failedPath = false;
 		if (_plan == null) {
 			_failedPath = true;

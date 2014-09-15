@@ -5,5 +5,6 @@ public class PlayButton : MonoBehaviour {
 
 	void OnMouseDown () {
 		StateStory.Instance.StartStory();
+		audio.Play ();
 	}
 }
