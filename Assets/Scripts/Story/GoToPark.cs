@@ -13,7 +13,7 @@ public class GoToPark : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].y<=.7 && currState.globalState[currState.stateName].z<=.7) {
+		if (currState.globalState[currState.stateName].y<=9 && currState.globalState[currState.stateName].z<=9) {
 			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;*/
@@ -21,7 +21,7 @@ public class GoToPark : StateAction {
 			                                      currState.globalState[currState.stateName].y-.2f,
 			                                      currState.globalState[currState.stateName].z-.2f,
 			                                      currState.globalState[currState.stateName].w);*/
-			neighbor.SetState(currState.stateName,0,-.2f,-.2f,0);
+			neighbor.SetState(currState.stateName,0,-2,-2,0);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}
@@ -41,5 +41,13 @@ public class GoToPark : StateAction {
 		}
 		//_possibleNeighbors.Add(neighbor);
 		return _possibleNeighbors;
+	}
+
+	public override string ToString ()
+	{
+		string returnString = gameObject.name + "\n";
+		returnString += "Requirements: anger and fear less then 10 for both characters.\n";
+		returnString += "Results: anger and fear decrease by 2 for both characters.";
+		return returnString;
 	}
 }

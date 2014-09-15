@@ -24,10 +24,10 @@ public class StateAdjustorButton : MonoBehaviour {
 		}
 		if (reverse || StateStory.Instance.movesLeft > 0) {
 			float increment = (direction) ? StateStory.Instance.adjustorIncrement : -StateStory.Instance.adjustorIncrement;
-			float x = (index == 0) ? increment : 0.0f;
-			float y = (index == 1) ? increment : 0.0f;
-			float z = (index == 2) ? increment : 0.0f;
-			float w = (index == 3) ? increment : 0.0f;
+			float x = (index == 0) ? increment : 0;
+			float y = (index == 1) ? increment : 0;
+			float z = (index == 2) ? increment : 0;
+			float w = (index == 3) ? increment : 0;
 			if (StateStory.Instance.ChangeStateOfObject (StateStory.Instance.GetSelectedObject(),x,y,z,w)){
 				if (direction){
 					StateStory.Instance.numberOfMoves[StateStory.Instance.GetSelectedObject().name][index] += 1;

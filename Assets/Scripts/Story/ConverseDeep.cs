@@ -14,7 +14,7 @@ public class ConverseDeep : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].z<=.5) {
+		if (currState.globalState[currState.stateName].z<=5) {
 			neighbor = new StateNode(currState.globalState);/*Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;*/
@@ -22,7 +22,7 @@ public class ConverseDeep : StateAction {
 			                                      currState.globalState[currState.stateName].y,
 			                                      currState.globalState[currState.stateName].z,
 			                                      currState.globalState[currState.stateName].w+.3f);*/
-			neighbor.SetState(currState.stateName,0,0,0,.3f);
+			neighbor.SetState(currState.stateName,0,0,0,3);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}
@@ -41,5 +41,13 @@ public class ConverseDeep : StateAction {
 		}
 		//_possibleNeighbors.Add(neighbor);
 		return _possibleNeighbors;
+	}
+	
+	public override string ToString ()
+	{
+		string returnString = gameObject.name + "\n";
+		returnString += "Requirements: fear less then 6 for both characters.\n";
+		returnString += "Results: trust increases by 3 for both characters.";
+		return returnString;
 	}
 }

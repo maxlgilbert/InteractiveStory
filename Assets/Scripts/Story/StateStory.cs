@@ -33,7 +33,7 @@ public class StateStory : MonoBehaviour {
 	public Material green;
 	public Material red;
 
-	public float adjustorIncrement;
+	public int adjustorIncrement;
 
 	private bool _failedPath;
 
@@ -127,7 +127,16 @@ public class StateStory : MonoBehaviour {
 			return returnString;
 		}
 	}
-
+	
+	public string actionListText {
+		get {
+			string returnString = "";
+			foreach (StateAction action in actions) {
+				returnString += action.ToString() + "\n";
+			}
+			return returnString;
+		}
+	}
 	public StateObject GetSelectedObject () {
 		return _selectedObject;
 	}
@@ -147,21 +156,21 @@ public class StateStory : MonoBehaviour {
 		float newZ = _globalState [stateObject.gameObject.name].z + z;
 		float newW = _globalState [stateObject.gameObject.name].w + w;
 		if (newX < 0 || newX < 0 || newX < 0 || newX < 0 ||
-		    newX > 1.0f || newX > 1.0f || newX > 1.0f || newX > 1.0f) {
+		    newX > 10 || newX > 10 || newX > 10 || newX > 10) {
 			successfulChange = false;
 		}
-		if (newX < 0.0f) newX = 0.0f;
-		if (newX > 1.0f) newX = 1.0f;
-		if (newY < 0.0f) newY = 0.0f;
-		if (newY > 1.0f) newY = 1.0f;
-		if (newZ < 0.0f) newZ = 0.0f;
-		if (newZ > 1.0f) newZ = 1.0f;
-		if (newW < 0.0f) newW = 0.0f;
-		if (newW > 1.0f) newW = 1.0f;
-		if (_globalState [stateObject.gameObject.name].x < 0.0f) newX = -1.0f;
-		if (_globalState [stateObject.gameObject.name].y < 0.0f) newY = -1.0f;
-		if (_globalState [stateObject.gameObject.name].z < 0.0f) newZ = -1.0f;
-		if (_globalState [stateObject.gameObject.name].w < 0.0f) newW = -1.0f;
+		if (newX < 0) newX = 0;
+		if (newX > 10) newX = 10;
+		if (newY < 0) newY = 0;
+		if (newY > 10) newY = 10;
+		if (newZ < 0) newZ = 0;
+		if (newZ > 10) newZ = 10;
+		if (newW < 0) newW = 0;
+		if (newW > 10) newW = 10;
+		if (_globalState [stateObject.gameObject.name].x < 0.0f) newX = -1;
+		if (_globalState [stateObject.gameObject.name].y < 0.0f) newY = -1;
+		if (_globalState [stateObject.gameObject.name].z < 0.0f) newZ = -1;
+		if (_globalState [stateObject.gameObject.name].w < 0.0f) newW = -1;
 		_globalState [stateObject.gameObject.name] = new Vector4 (newX, newY, newZ, newW);
 		stateObject.emotionalState = new Vector4 (newX, newY, newZ, newW);
 		return successfulChange;
@@ -174,7 +183,7 @@ public class StateStory : MonoBehaviour {
 			printState += key + ": ";
 			bool first = true;
 			for (int i = 0; i < 4; i++) {
-				if (state[key][i] >= 0.0f) {
+				if (state[key][i] >= 0) {
 					if (!first){ 
 						printState += ", ";
 					} else {
@@ -220,9 +229,9 @@ public class StateStory : MonoBehaviour {
 		_start = new StateNode(_globalState);
 		Dictionary<string,Vector4> goalState = new Dictionary<string, Vector4>();
 		foreach (string key in _globalState.Keys) {
-			goalState[key] = new Vector4(-1.0f,-1.0f,-1.0f,-1.0f);
+			goalState[key] = new Vector4(-1,-1,-1,-1);
 		}
-		goalState[protagonist.gameObject.name] = new Vector4(.5f,-1.0f,-1.0f,-1.0f);
+		goalState[protagonist.gameObject.name] = new Vector4(5,-1,-1,-1);
 		_goal = new StateNode(goalState);
 		UpdateNeighbors();
 		_plan = _aStar.FindPath (_start, _goal);

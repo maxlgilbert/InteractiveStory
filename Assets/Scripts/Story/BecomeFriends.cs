@@ -34,10 +34,10 @@ public class BecomeFriends : StateAction {
 
 
 
-		if (currState.globalState[currState.stateName].y<=.5 && currState.globalState[currState.stateName].w>=.5) {
+		if (currState.globalState[currState.stateName].y<=5 && currState.globalState[currState.stateName].w>=5) {
 			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
 				string friendName = StateStory.Instance.roles[Role.Character][i];
-				if (currState.globalState[friendName].y<=.5 && currState.globalState[friendName].w>=.5) {
+				if (currState.globalState[friendName].y<=5 && currState.globalState[friendName].w>=5) {
 					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 					                                 new Vector3(),
 					                                 Quaternion.identity) as StateNode;*/
@@ -47,7 +47,7 @@ public class BecomeFriends : StateAction {
 					                                      currState.globalState[currState.stateName].w);*/
 
 					
-					neighbor.SetState(currState.stateName,.5f,0,0,0);
+					neighbor.SetState(currState.stateName,5f,0,0,0);
 					
 					neighbor.actions=StateStory.Instance.actions;
 					/*neighbor.globalState[friendName] = new Vector4(currState.globalState[friendName].x+.3f,
@@ -55,7 +55,7 @@ public class BecomeFriends : StateAction {
 					                                                                                 currState.globalState[friendName].z,
 					                                                                                 currState.globalState[friendName].w);*/
 
-					neighbor.SetState(friendName,.5f,0,0,0);
+					neighbor.SetState(friendName,5f,0,0,0);
 
 					int numActions = 0;
 					for (int j  = 0; j < curr.parentActions.Count; j++) {
@@ -73,5 +73,14 @@ public class BecomeFriends : StateAction {
 		}
 		//Update neighbor??????
 		return _possibleNeighbors;
+	}
+
+	
+	public override string ToString ()
+	{
+		string returnString = gameObject.name + "\n";
+		returnString += "Requirements: anger less then 6 and trust greater than 4 for both characters.\n";
+		returnString += "Results: joy increases by 5 for both characters.";
+		return returnString;
 	}
 }

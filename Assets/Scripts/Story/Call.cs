@@ -14,26 +14,16 @@ public class Call : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].x<0.1f) {
-			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
-			                                 new Vector3(),
-			                                 Quaternion.identity) as StateNode;*/
-			/*neighbor.globalState[currState.stateName] = new Vector4(currState.globalState[currState.stateName].x+.5f,
-			                                      currState.globalState[currState.stateName].y,
-			                                      currState.globalState[currState.stateName].z,
-			                                      currState.globalState[currState.stateName].w);*/
+		if (currState.globalState[currState.stateName].z<=7) {
+			neighbor = new StateNode(currState.globalState);
 
 			
-			neighbor.SetState(currState.stateName,.1f,0,0,0);
+			neighbor.SetState(currState.stateName,1,0,0,0);
 			
 			neighbor.actions=StateStory.Instance.actions;
 			string friendName = StateStory.Instance.roles[Role.Character][0];
-			/*neighbor.globalState[friendName] = new Vector4(currState.globalState[friendName].x+.3f,
-			                                                                                 currState.globalState[friendName].y,
-			                                                                                 currState.globalState[friendName].z,
-			                                                                                 currState.globalState[friendName].w);*/
 			
-			neighbor.SetState(friendName,.1f,0,0,0);
+			neighbor.SetState(friendName,1,0,0,0);
 		}
 		if (neighbor != null) {
 			int numActions = 0;
@@ -48,7 +38,14 @@ public class Call : StateAction {
 				_possibleNeighbors.Add(neighbor);
 			}
 		}
-		//Update neighbor??????
-		//_possibleNeighbors.Add(neighbor);
-		return _possibleNeighbors;	}
+		return _possibleNeighbors;
+	}
+
+	public override string ToString ()
+	{
+		string returnString = gameObject.name + "\n";
+		returnString += "Requirements: fear less then 8 for both characters.\n";
+		returnString += "Raises joy by 1 for both characters.";
+		return returnString;
+	}
 }

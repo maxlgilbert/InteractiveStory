@@ -9,12 +9,10 @@ public class StateAction : AStarAction {
 	}
 	public override List<AStarNode> TryAction (AStarNode curr)
 	{
-		/*StateNode currState = curr as StateNode;
-		if (currState.happy) {
-			return StateStory.Instance.sad;
-		} else {
-			return StateStory.Instance.happy;
-		}*/
 		return null;
+	}
+
+	public virtual string ToString () {
+		return gameObject.name;
 	}
 }
