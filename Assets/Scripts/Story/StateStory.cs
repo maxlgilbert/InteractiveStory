@@ -78,7 +78,20 @@ public class StateStory : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.C)) {
 			clearPath();
-		}
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            foreach (AStarAction action in actions)
+            {
+                StateAction stateAction = action as StateAction;
+                List<StateObject> Actors = new List<StateObject>();
+                List<StateObject> Objects = new List<StateObject>();
+                Actors.Add(protagonist);
+                Actors.Add(_selectedObject);
+                stateAction.EnactAction(Actors, Objects);
+                Debug.LogError("Pressed T");
+            }
+        }
 	}
 	
 	

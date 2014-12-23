@@ -9,6 +9,8 @@ public class StateObject : MonoBehaviour {
 	public Vector4 emotionalState;
 
 	public Role role;
+
+    public float speed;
 	// Use this for initialization
 	void Start () {
 		StateStory.Instance.AddStateObject (this);
@@ -30,4 +32,23 @@ public class StateObject : MonoBehaviour {
 	public void Deselect () {
 		gameObject.renderer.material = StateStory.Instance.red;
 	}
+
+    public void MoveToWithin(Vector3 newPosition, float stoppingRadius)
+    {
+        Debug.LogError("Moved to within");
+        StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed));
+    }
+
+    private IEnumerator MoveToAtSpeed(Vector3 newPosition, float stoppingRadius, float speed)
+    {
+        Debug.LogError("I'm in a coroutine!");
+        Vector3 direction = newPosition - gameObject.transform.position;
+        while (Vector3.Distance(gameObject.transform.position, newPosition) > stoppingRadius)
+        {
+            Vector3 nextPosition = gameObject.transform.position + speed*direction/30.0f;
+            gameObject.transform.position = nextPosition;
+            yield return new WaitForFixedUpdate();
+            Debug.LogError("I waited for a fixed update");
+        }
+    }
 }

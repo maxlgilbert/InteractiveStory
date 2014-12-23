@@ -83,4 +83,11 @@ public class BecomeFriends : StateAction {
 		returnString += "Results: joy increases by 5 for both characters.";
 		return returnString;
 	}
+
+    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    {
+        Debug.LogError("Enacted become friends");
+        base.EnactAction(Actors, Objects);
+        Actors[0].MoveToWithin(Actors[1].gameObject.transform.position,1.0f);
+    }
 }
