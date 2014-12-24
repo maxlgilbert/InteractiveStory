@@ -36,7 +36,7 @@ public class BecomeFriends : StateAction {
 
 		if (currState.globalState[currState.stateName].y<=5 && currState.globalState[currState.stateName].w>=5) {
 			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
-				string friendName = StateStory.Instance.roles[Role.Character][i];
+				string friendName = StateStory.Instance.roles[Role.Character][i].gameObject.name;
 				if (currState.globalState[friendName].y<=5 && currState.globalState[friendName].w>=5) {
 					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 					                                 new Vector3(),
@@ -64,7 +64,11 @@ public class BecomeFriends : StateAction {
 							numActions++;
 						}
 					}
-					if (numActions < this.numberAvailable) {
+                    if (numActions < this.numberAvailable)
+                    {
+                        neighbor.actionID = this.actionIndex;
+                        neighbor.actionID |= StateStory.Instance.roles[Role.Character][i].objectIndex;
+                        neighbor.actionID |= StateStory.Instance.protagonist.objectIndex;
 						neighbor.parentActions.Add(this.GetActionText() + friendName);
 						_possibleNeighbors.Add(neighbor);
 					}
@@ -87,7 +91,7 @@ public class BecomeFriends : StateAction {
     public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
     {
         Debug.LogError("Enacted become friends");
-        base.EnactAction(Actors, Objects);
         Actors[0].MoveToWithin(Actors[1].gameObject.transform.position,1.0f);
+        OnActionCompleted();
     }
 }

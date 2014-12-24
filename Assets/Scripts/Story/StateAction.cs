@@ -13,15 +13,26 @@ public class StateAction : AStarAction {
 	}
     void OnMouseDown()
     {
-        StateStory.Instance.actions.Add(this);
+        //StateStory.Instance.actions[this.actionIndex] = this;
+        StateStory.Instance.AddAction(this);
     }
 
-	public virtual string ToString () {
+	public override string ToString () {
 		return gameObject.name;
 	}
 
+
+    public delegate void ActionCompletedHandler();
+    public event ActionCompletedHandler ActionCompleted;
+    protected virtual void OnActionCompleted()
+    {
+        if (ActionCompleted != null)
+        {
+            ActionCompleted();
+        }
+    }
     public virtual void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
     {
-
+        OnActionCompleted();
     }
 }

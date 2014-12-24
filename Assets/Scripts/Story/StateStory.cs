@@ -7,7 +7,8 @@ public class StateStory : MonoBehaviour {
 	public int maxDepth;
 	public StateObject protagonist;
 	private StateObject _selectedObject;
-	private List<StateObject> _stateObjects;
+	private Dictionary<ulong,StateObject> _stateObjects;
+    private ulong _objectIndex = 1;
 	[HideInInspector] public int selectedState;
 	//public StateObject goal;
 	private StateNode _start;
@@ -19,13 +20,15 @@ public class StateStory : MonoBehaviour {
 	public List<Vector4> goalStates;
 	private Dictionary<string, Vector4> _goalMap;
 
-	public List<AStarAction> actions;
+	public Dictionary<ulong,AStarAction> actions;
+    private StateAction _currentAction;
+    private ulong _actionIndex = 0;
 
 	private static StateStory instance;
 
 	private Dictionary<string,Vector4> _globalState;
 
-	public Dictionary<Role,List<string>> roles;
+	public Dictionary<Role,List<StateObject>> roles;
 
 	private Dictionary<int,string> stateMap;
 
@@ -51,7 +54,7 @@ public class StateStory : MonoBehaviour {
 		stateMap[1] = "anger";
 		stateMap[2] = "fear";
 		stateMap[3] = "trust";
-		roles = new Dictionary<Role, List<string>> ();
+		roles = new Dictionary<Role, List<StateObject>> ();
 		_plan = new List<AStarNode>();
 		_goalMap = new Dictionary<string, Vector4>();
 		if (goalStates.Count == goalObjects.Count) {
@@ -60,10 +63,11 @@ public class StateStory : MonoBehaviour {
 			}
 		}
 		_selectedObject = protagonist;
-		_stateObjects = new List<StateObject> ();
+		_stateObjects = new Dictionary<ulong,StateObject> ();
 		selectedState = 0;
 		_failedPath = false;
 		numberOfMoves = new Dictionary<string, Dictionary<int, int>>();
+        actions = new Dictionary<ulong, AStarAction>();
 
 		
 	}
@@ -73,13 +77,18 @@ public class StateStory : MonoBehaviour {
 	void Start () {
 		_aStar = new AStar(maxDepth);
 		SetSelectedObject (protagonist);
+        foreach (AStarAction action in actions.Values)
+        {
+            StateAction stateAction = action as StateAction;
+            stateAction.ActionCompleted += PlayNextAction;
+        }
 	}
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.C)) {
 			clearPath();
         }
-        if (Input.GetKeyDown(KeyCode.T))
+       /* if (Input.GetKeyDown(KeyCode.T))
         {
             foreach (AStarAction action in actions)
             {
@@ -91,7 +100,7 @@ public class StateStory : MonoBehaviour {
                 stateAction.EnactAction(Actors, Objects);
                 Debug.LogError("Pressed T");
             }
-        }
+        }*/
 	}
 	
 	
@@ -106,6 +115,42 @@ public class StateStory : MonoBehaviour {
 			return availableMoves - moves;
 		}
 	}
+    public void PlayStory()
+    {
+        if (!_failedPath)
+        {
+            foreach (AStarNode node in _plan)
+            {
+                StateNode happyState = node as StateNode;
+                if (happyState.parentActions != null && happyState.parentActions.Count != 0)
+                {
+                    StateAction stateAction = GetAction(happyState.actionID);
+                    List<StateObject> Actors = GetObjects(happyState.actionID);
+                    List<StateObject> Objects = new List<StateObject>();
+                    //Actors.Add(protagonist);
+                    //Actors.Add(_selectedObject);
+                    stateAction.EnactAction(Actors,Objects);
+                }
+            }
+        } 
+    }
+    public StateAction GetAction(ulong state)
+    {
+        return  actions[3 & state] as StateAction;
+    }
+    public void AddAction(StateAction stateAction)
+    {
+        actions[_actionIndex] = stateAction;
+        stateAction.actionIndex = _actionIndex;
+        _actionIndex++;
+    }
+    public void PlayNextAction()
+    {
+        // IF next action can play, play
+        // Else replan
+
+    }
+
 	public string storyBoardText{
 		get {
 			string returnString = "";
@@ -148,19 +193,34 @@ public class StateStory : MonoBehaviour {
 	public string actionListText {
 		get {
 			string returnString = "Available actions:\n";
-			foreach (StateAction action in actions) {
+			foreach (StateAction action in actions.Values) {
 				returnString += action.ToString() + "\n";
 			}
 			return returnString;
 		}
 	}
+
+    public List<StateObject> GetObjects(ulong state)
+    {
+        List<StateObject> objects = new List<StateObject>();
+        ulong objectIndex = 4;
+        for (int i = 0; i < _stateObjects.Values.Count; i++ )
+        {
+            if ((state & objectIndex) == objectIndex)
+            {
+                objects.Add(_stateObjects[objectIndex]);
+            }
+            objectIndex *= 2;
+        }
+        return objects;
+    }
 	public StateObject GetSelectedObject () {
 		return _selectedObject;
 	}
 
 	public void SetSelectedObject (StateObject stateObject) {
-		for (int i = 0; i < _stateObjects.Count; i++) {
-			_stateObjects[i].Deselect();
+		foreach (StateObject stateObjectVal in _stateObjects.Values) {
+			stateObjectVal.Deselect();
 		}
 		stateObject.Select ();
 		_selectedObject = stateObject;
@@ -228,13 +288,15 @@ public class StateStory : MonoBehaviour {
 	}
 
 	public void AddStateObject (StateObject stateObject) {
-		_stateObjects.Add (stateObject);
+		_stateObjects[_objectIndex*4] = stateObject;
+        stateObject.objectIndex = _objectIndex*4;
+        _objectIndex*=2;
 		_globalState.Add (stateObject.name, stateObject.emotionalState);
 		if (roles.ContainsKey(stateObject.role)) {
-			roles[stateObject.role].Add(stateObject.gameObject.name);
+			roles[stateObject.role].Add(stateObject);
 		} else {
-			List<string> names = new List<string>();
-			names.Add (stateObject.gameObject.name);
+			List<StateObject> names = new List<StateObject>();
+			names.Add (stateObject);
 			roles[stateObject.role] = names;
 		}
 		numberOfMoves[stateObject.name] = new Dictionary<int, int>();
@@ -258,6 +320,7 @@ public class StateStory : MonoBehaviour {
 			_failedPath = true;
 			clearPath();
 		}
+        PlayStory();
 	}
 	
 	public void UpdateNeighbors () {

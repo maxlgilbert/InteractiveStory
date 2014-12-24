@@ -21,7 +21,7 @@ public class Call : StateAction {
 			neighbor.SetState(currState.stateName,1,0,0,0);
 			
 			neighbor.actions=StateStory.Instance.actions;
-			string friendName = StateStory.Instance.roles[Role.Character][0];
+			string friendName = StateStory.Instance.roles[Role.Character][0].gameObject.name;
 			
 			neighbor.SetState(friendName,1,0,0,0);
 		}
@@ -33,7 +33,9 @@ public class Call : StateAction {
 					numActions++;
 				}
 			}
-			if (numActions < this.numberAvailable) {
+            if (numActions < this.numberAvailable)
+            {
+                neighbor.actionID = this.actionIndex;
 				neighbor.parentActions.Add(this.GetActionText());
 				_possibleNeighbors.Add(neighbor);
 			}

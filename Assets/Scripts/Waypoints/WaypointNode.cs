@@ -11,7 +11,7 @@ public class WaypointNode : AStarNode {
 	public int j;
 	// Use this for initialization
 	void Awake () {
-		actions = WaypointGrid.Instance.actions;
+		//actions = WaypointGrid.Instance.actions;
 	}
 	
 	// Update is called once per frame

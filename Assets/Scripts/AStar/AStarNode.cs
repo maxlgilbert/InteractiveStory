@@ -32,12 +32,14 @@ public class AStarNode {
 
 	public List<string> parentActions;
 
+    public ulong actionID;
+
 	/// <summary>
 	/// Whether AStar has seen this node or not.
 	/// </summary>
 	public bool visited = false;
 
-	public List<AStarAction> actions;
+	public Dictionary<ulong,AStarAction> actions;
 
 	protected List<AStarNode> _neighbors;
 
@@ -48,7 +50,7 @@ public class AStarNode {
 	public void UpdateNeighbors () {
 		_neighbors = new List<AStarNode>();
 		if (actions != null) {
-			foreach (AStarAction action in actions) {
+			foreach (AStarAction action in actions.Values) {
 				List<AStarNode> possibleNeighbors = action.TryAction(this);
 				if (possibleNeighbors != null) {
 					_neighbors.AddRange(possibleNeighbors);

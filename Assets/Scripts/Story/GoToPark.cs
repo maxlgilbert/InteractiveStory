@@ -34,7 +34,9 @@ public class GoToPark : StateAction {
 					numActions++;
 				}
 			}
-			if (numActions < this.numberAvailable) {
+            if (numActions < this.numberAvailable)
+            {
+                neighbor.actionID = this.actionIndex;
 				neighbor.parentActions.Add(this.GetActionText());
 				_possibleNeighbors.Add(neighbor);
 			}
