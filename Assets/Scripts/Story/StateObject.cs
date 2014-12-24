@@ -35,12 +35,13 @@ public class StateObject : MonoBehaviour {
 		gameObject.renderer.material = StateStory.Instance.red;
 	}
 
-    public void MoveToWithin(Vector3 newPosition, float stoppingRadius)
+    public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted)
     {
-        StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed));
+        
+        StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed, actionCompleted));
     }
 
-    private IEnumerator MoveToAtSpeed(Vector3 newPosition, float stoppingRadius, float speed)
+    private IEnumerator MoveToAtSpeed(Vector3 newPosition, float stoppingRadius, float speed, StateAction.ActionCompletedHandler actionCompleted)
     {
         Vector3 direction = newPosition - gameObject.transform.position;
         while (Vector3.Distance(gameObject.transform.position, newPosition) > stoppingRadius)
@@ -49,5 +50,6 @@ public class StateObject : MonoBehaviour {
             gameObject.transform.position = nextPosition;
             yield return new WaitForFixedUpdate();
         }
+        actionCompleted();
     }
 }

@@ -33,6 +33,7 @@ public class StateStory : MonoBehaviour {
 	private Dictionary<int,string> stateMap;
 
 	private List<AStarNode> _plan;
+    private int _currentPlanStep = 0 ;
 	public Material green;
 	public Material red;
 
@@ -142,12 +143,26 @@ public class StateStory : MonoBehaviour {
     {
         actions[_actionIndex] = stateAction;
         stateAction.actionIndex = _actionIndex;
+        stateAction.ActionCompleted += PlayNextAction;
         _actionIndex++;
     }
     public void PlayNextAction()
     {
         // IF next action can play, play
         // Else replan
+        Debug.LogError("Play next step");
+        if (!_failedPath && _currentPlanStep < _plan.Count)
+        {
+            Debug.LogError(_currentPlanStep);
+            AStarNode node = _plan[_currentPlanStep];
+            StateNode happyState = node as StateNode;
+            StateAction stateAction = GetAction(happyState.actionID);
+            List<StateObject> Actors = GetObjects(happyState.actionID);
+            List<StateObject> Objects = new List<StateObject>();
+            _currentPlanStep++;
+            stateAction.EnactAction(Actors, Objects);
+            Debug.LogError(_currentPlanStep);
+        } 
 
     }
 
@@ -320,7 +335,7 @@ public class StateStory : MonoBehaviour {
 			_failedPath = true;
 			clearPath();
 		}
-        PlayStory();
+        PlayNextAction();
 	}
 	
 	public void UpdateNeighbors () {

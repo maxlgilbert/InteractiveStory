@@ -90,8 +90,8 @@ public class BecomeFriends : StateAction {
 
     public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
     {
-        Debug.LogError("Enacted become friends");
-        Actors[0].MoveToWithin(Actors[1].gameObject.transform.position,1.0f);
-        OnActionCompleted();
+        ActionCompletedHandler actionCompleted = () => OnActionCompleted();
+        Actors[0].MoveToWithin(Actors[1].gameObject.transform.position,1.0f,actionCompleted);
+        //OnActionCompleted();
     }
 }

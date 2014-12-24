@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+
 public class StateAction : AStarAction {
 	void Start () {
 		//StateStory.Instance.actions.Add(this);
@@ -21,13 +23,13 @@ public class StateAction : AStarAction {
 		return gameObject.name;
 	}
 
-
     public delegate void ActionCompletedHandler();
     public event ActionCompletedHandler ActionCompleted;
     protected virtual void OnActionCompleted()
     {
         if (ActionCompleted != null)
         {
+            Debug.LogError("here");
             ActionCompleted();
         }
     }
