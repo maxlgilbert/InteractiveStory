@@ -29,7 +29,6 @@ public class StateAction : AStarAction {
     {
         if (ActionCompleted != null)
         {
-            Debug.LogError("here");
             ActionCompleted();
         }
     }

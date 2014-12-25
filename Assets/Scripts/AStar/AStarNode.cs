@@ -32,7 +32,7 @@ public class AStarNode {
 
 	public List<string> parentActions;
 
-    public ulong actionID;
+    public ulong actionID = ulong.MaxValue;
 
 	/// <summary>
 	/// Whether AStar has seen this node or not.

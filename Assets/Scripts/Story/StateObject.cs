@@ -52,4 +52,16 @@ public class StateObject : MonoBehaviour {
         }
         actionCompleted();
     }
+
+    public void WaitFor(float duration, StateAction.ActionCompletedHandler actionCompleted)
+    {
+
+        StartCoroutine(WaitForThen(duration, actionCompleted));
+    }
+
+    private IEnumerator WaitForThen(float duration, StateAction.ActionCompletedHandler actionCompleted)
+    {
+        yield return new WaitForSeconds(duration);
+        actionCompleted();
+    }
 }

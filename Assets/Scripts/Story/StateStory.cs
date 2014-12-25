@@ -150,18 +150,24 @@ public class StateStory : MonoBehaviour {
     {
         // IF next action can play, play
         // Else replan
-        Debug.LogError("Play next step");
+        //Debug.LogError("Play next step");
         if (!_failedPath && _currentPlanStep < _plan.Count)
         {
-            Debug.LogError(_currentPlanStep);
+           // Debug.LogError(_currentPlanStep);
             AStarNode node = _plan[_currentPlanStep];
             StateNode happyState = node as StateNode;
-            StateAction stateAction = GetAction(happyState.actionID);
-            List<StateObject> Actors = GetObjects(happyState.actionID);
-            List<StateObject> Objects = new List<StateObject>();
             _currentPlanStep++;
-            stateAction.EnactAction(Actors, Objects);
-            Debug.LogError(_currentPlanStep);
+            if (happyState.actionID != ulong.MaxValue)
+            {
+                StateAction stateAction = GetAction(happyState.actionID);
+                List<StateObject> Actors = GetObjects(happyState.actionID);
+                List<StateObject> Objects = new List<StateObject>();
+                stateAction.EnactAction(Actors, Objects);
+            }
+            else
+            {
+                PlayNextAction();
+            }
         } 
 
     }
@@ -177,7 +183,7 @@ public class StateStory : MonoBehaviour {
 					StateNode happyState = node as StateNode;
 					if (happyState.parentActions != null && happyState.parentActions.Count != 0) {
 						printState += happyState.parentActions[happyState.parentActions.Count-1] + "\n";
-						printState += StateToString( happyState.globalState);
+						//printState += StateToString( happyState.globalState);
 					}
 				}
 				returnString += printState;
@@ -334,7 +340,8 @@ public class StateStory : MonoBehaviour {
 		if (_plan == null) {
 			_failedPath = true;
 			clearPath();
-		}
+        }
+        _currentPlanStep = 0;
         PlayNextAction();
 	}
 	

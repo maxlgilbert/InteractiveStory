@@ -37,6 +37,8 @@ public class ConverseDeep : StateAction {
             if (numActions < this.numberAvailable)
             {
                 neighbor.actionID = this.actionIndex;
+                //neighbor.actionID |= StateStory.Instance.roles[Role.Character][i].objectIndex;
+                neighbor.actionID |= StateStory.Instance.protagonist.objectIndex;
 				neighbor.parentActions.Add(this.GetActionText());
 				_possibleNeighbors.Add(neighbor);
 			}
@@ -52,4 +54,10 @@ public class ConverseDeep : StateAction {
 		returnString += "Results: trust increases by 3 for both characters.";
 		return returnString;
 	}
+
+    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    {
+        ActionCompletedHandler actionCompleted = () => OnActionCompleted();
+        Actors[0].WaitFor(2.0f, actionCompleted);
+    }
 }
