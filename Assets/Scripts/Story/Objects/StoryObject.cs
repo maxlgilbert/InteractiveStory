@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Character : MonoBehaviour {
-
+public class StoryObject : MonoBehaviour {
+    public int roomNumber;
 	// Use this for initialization
 	void Start () {
 	

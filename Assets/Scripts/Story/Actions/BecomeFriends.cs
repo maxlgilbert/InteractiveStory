@@ -38,7 +38,8 @@ public class BecomeFriends : StateAction {
         {
 			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
 				string friendName = StateStory.Instance.roles[Role.Character][i].gameObject.name;
-                if (currState.globalState[friendName].GetValue("Anger") <= 5 && currState.globalState[friendName].GetValue("Trust") >= 5)
+				if (StateStory.Instance.fixedRooms[(int) currState.globalState[currState.stateName].GetValue("Room")].RoomsConnected((int)currState.globalState[friendName].GetValue("Room"),currState.globalState)
+				    && currState.globalState[friendName].GetValue("Anger") <= 5 && currState.globalState[friendName].GetValue("Trust") >= 5)
                 {
 					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 					                                 new Vector3(),

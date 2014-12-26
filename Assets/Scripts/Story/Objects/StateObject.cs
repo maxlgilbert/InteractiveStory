@@ -5,42 +5,92 @@ public enum Role {
 	Character
 }
 
-public class StateObject : MonoBehaviour {
-	public Vector4 emotionalState;
-
+public class StateObject : StoryObject {
     public SmartState state;
 
 	public Role role;
 
     public float speed;
 
+    public bool moveable;
+
     public ulong objectIndex;
+
+    private Vector3 _previousPosition;
     void Awake()
     {
         state = new SmartState();
-		
-		state.AddState("Joy", emotionalState.x);
-		state.AddState("Anger", emotionalState.y);
-		state.AddState("Fear", emotionalState.z);
-		state.AddState("Trust", emotionalState.w);
 
     }
 
     //public ulong indexOffset;
 	// Use this for initialization
 	void Start () {
-		StateStory.Instance.AddStateObject (this);
+        BaseStart();
 	}
+
+    protected void BaseStart()
+    {
+        state.AddState("Room", roomNumber); //TODO Standardizes these strings somehow (static constant somewhere)
+        StateStory.Instance.AddStateObject(this);
+    }
 
 	void OnMouseDown () {
 		StateStory.Instance.SetSelectedObject(this);
+        _previousPosition = gameObject.transform.position;
 	}
+
+    void OnMouseDrag()
+    {
+        if (moveable)
+        {
+            int layerMask = 1 << 8;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100,layerMask))
+            {
+                gameObject.transform.position = hit.point;
+            }
+        }
+    }
+
+    void OnMouseUp()
+    {
+        int layerMask = 1 << 9;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 100, layerMask))
+        {
+            gameObject.transform.position = hit.point;
+            StoryObject receiver = hit.collider.gameObject.GetComponent<StoryObject>();
+            ChangeState("Room", receiver.roomNumber);
+            OnStateChanged();
+        }
+        else
+        {
+            StateAction.ActionCompletedHandler nothingChanged = () => OnNothingChanged();
+            MoveToWithin(_previousPosition, 0.2f, nothingChanged);
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
 
+    public event StateAction.ActionCompletedHandler StateChanged;
+    protected virtual void OnNothingChanged()
+    {
+
+    }
+
+    protected virtual void OnStateChanged()
+    {
+        if (StateChanged != null)
+        {
+            StateChanged();
+        }
+    }
 	public void ChangeState (string field, float value) {
 		state.SetState(field,value);
 	}

@@ -5,9 +5,10 @@ using System.Collections.Generic;
 public class StateStory : MonoBehaviour {
 
 	public int maxDepth;
-	public StateObject protagonist;
+	[HideInInspector] public StateCharacter protagonist;
 	private StateObject _selectedObject;
 	private Dictionary<ulong,StateObject> _stateObjects;
+	public Dictionary<int,FixedRoom> fixedRooms;
     private ulong _objectIndex = 1;
 	[HideInInspector] public int selectedState;
 	//public StateObject goal;
@@ -46,7 +47,9 @@ public class StateStory : MonoBehaviour {
 	public int availableMoves;
 
 	private bool _triedPlan = false;
-	
+
+    public GameObject intersectionPlane;
+
 	void Awake() {
 		instance = this;
 		_globalState = new Dictionary<string, Vector4> ();
@@ -69,6 +72,7 @@ public class StateStory : MonoBehaviour {
 		_failedPath = false;
 		numberOfMoves = new Dictionary<string, Dictionary<int, int>>();
         actions = new Dictionary<ulong, AStarAction>();
+		fixedRooms = new Dictionary<int, FixedRoom>();
 
 		
 	}
@@ -270,7 +274,7 @@ public class StateStory : MonoBehaviour {
 		if (_globalState [stateObject.gameObject.name].z < 0.0f) newZ = -1;
 		if (_globalState [stateObject.gameObject.name].w < 0.0f) newW = -1;
 		_globalState [stateObject.gameObject.name] = new Vector4 (newX, newY, newZ, newW);
-		stateObject.emotionalState = new Vector4 (newX, newY, newZ, newW);
+		//stateObject.emotionalState = new Vector4 (newX, newY, newZ, newW);
 		stateObject.ChangeState("Joy",newX);
 		stateObject.ChangeState("Anger",newY);
 		stateObject.ChangeState("Fear",newZ);
@@ -311,12 +315,18 @@ public class StateStory : MonoBehaviour {
 			return instance;
 		}
 	}
+	public void AddFixedRoom (FixedRoom fixedRoom) { // TODO what if not only rooms lol
+		fixedRooms[fixedRoom.roomNumber] =  fixedRoom;
+	}
 
 	public void AddStateObject (StateObject stateObject) {
 		_stateObjects[_objectIndex*4] = stateObject;
         stateObject.objectIndex = _objectIndex*4;
         _objectIndex*=2;
-		_globalState.Add (stateObject.name, stateObject.emotionalState);
+		StateCharacter character = stateObject as StateCharacter;
+		if (character != null) {
+			_globalState.Add (character.name, character.emotionalState);
+		}
 		if (roles.ContainsKey(stateObject.role)) {
 			roles[stateObject.role].Add(stateObject);
 		} else {
@@ -328,6 +338,9 @@ public class StateStory : MonoBehaviour {
 		for (int i = 0; i < 4; i++) {
 			numberOfMoves[stateObject.name][i] = 0;
 		}
+		if (stateObject.role == Role.Protagonist) {
+			protagonist = character;
+		}
 	}
     public void StartStory()
     {
@@ -336,12 +349,12 @@ public class StateStory : MonoBehaviour {
 			startState[stateObject.gameObject.name] = new SmartState(stateObject.state);
 		}
         _start = new StateNode(startState);
+
         Dictionary<string,SmartState> goalState = new Dictionary<string,SmartState>();
-		foreach (string key in _globalState.Keys) {
-		}
 		goalState[protagonist.gameObject.name] = new SmartState();
 		goalState[protagonist.gameObject.name].SetState("Joy",5);
 		_goal = new StateNode(goalState);
+
 		UpdateNeighbors();
 		_plan = _aStar.FindPath (_start, _goal);
 		_triedPlan = true;
