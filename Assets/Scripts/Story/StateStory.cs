@@ -271,6 +271,10 @@ public class StateStory : MonoBehaviour {
 		if (_globalState [stateObject.gameObject.name].w < 0.0f) newW = -1;
 		_globalState [stateObject.gameObject.name] = new Vector4 (newX, newY, newZ, newW);
 		stateObject.emotionalState = new Vector4 (newX, newY, newZ, newW);
+		stateObject.ChangeState("Joy",newX);
+		stateObject.ChangeState("Anger",newY);
+		stateObject.ChangeState("Fear",newZ);
+		stateObject.ChangeState("Trust",newW);
 		return successfulChange;
 	}
 
@@ -325,13 +329,18 @@ public class StateStory : MonoBehaviour {
 			numberOfMoves[stateObject.name][i] = 0;
 		}
 	}
-	public void StartStory () {
-		_start = new StateNode(_globalState);
-		Dictionary<string,Vector4> goalState = new Dictionary<string, Vector4>();
-		foreach (string key in _globalState.Keys) {
-			goalState[key] = new Vector4(-1,-1,-1,-1);
+    public void StartStory()
+    {
+        Dictionary<string, SmartState> startState = new Dictionary<string, SmartState>();
+		foreach (StateObject stateObject in _stateObjects.Values) {
+			startState[stateObject.gameObject.name] = new SmartState(stateObject.state);
 		}
-		goalState[protagonist.gameObject.name] = new Vector4(5,-1,-1,-1);
+        _start = new StateNode(startState);
+        Dictionary<string,SmartState> goalState = new Dictionary<string,SmartState>();
+		foreach (string key in _globalState.Keys) {
+		}
+		goalState[protagonist.gameObject.name] = new SmartState();
+		goalState[protagonist.gameObject.name].SetState("Joy",5);
 		_goal = new StateNode(goalState);
 		UpdateNeighbors();
 		_plan = _aStar.FindPath (_start, _goal);

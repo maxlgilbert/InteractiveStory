@@ -14,7 +14,8 @@ public class ConverseDeep : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].z<=5) {
+        if (currState.globalState[currState.stateName].GetValue("Fear") <= 5)
+        {
 			neighbor = new StateNode(currState.globalState);/*Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;*/
@@ -22,7 +23,11 @@ public class ConverseDeep : StateAction {
 			                                      currState.globalState[currState.stateName].y,
 			                                      currState.globalState[currState.stateName].z,
 			                                      currState.globalState[currState.stateName].w+.3f);*/
-			neighbor.SetState(currState.stateName,0,0,0,3);
+
+            //neighbor.SetGlobalState(currState.stateName, "Joy", 0);
+            //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
+            //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
+            neighbor.SetGlobalState(currState.stateName, "Trust", 3f);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}

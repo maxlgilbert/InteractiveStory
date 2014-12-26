@@ -13,7 +13,8 @@ public class GoToPark : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].y<=9 && currState.globalState[currState.stateName].z<=9) {
+        if (currState.globalState[currState.stateName].GetValue("Anger") <= 9 && currState.globalState[currState.stateName].GetValue("Fear") <= 9)
+        {
 			neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 			                       new Vector3(),
 			                       Quaternion.identity) as StateNode;*/
@@ -21,7 +22,11 @@ public class GoToPark : StateAction {
 			                                      currState.globalState[currState.stateName].y-.2f,
 			                                      currState.globalState[currState.stateName].z-.2f,
 			                                      currState.globalState[currState.stateName].w);*/
-			neighbor.SetState(currState.stateName,0,-2,-2,0);
+
+            //neighbor.SetGlobalState(currState.stateName, "Joy", 0);
+            neighbor.SetGlobalState(currState.stateName, "Anger", -2f);
+            neighbor.SetGlobalState(currState.stateName, "Fear", -2f);
+            //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}

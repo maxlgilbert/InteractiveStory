@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 public enum Role {
 	Protagonist,
@@ -8,11 +8,25 @@ public enum Role {
 public class StateObject : MonoBehaviour {
 	public Vector4 emotionalState;
 
+    public SmartState state;
+
 	public Role role;
 
     public float speed;
 
     public ulong objectIndex;
+    void Awake()
+    {
+        state = new SmartState();
+		
+		state.AddState("Joy", emotionalState.x);
+		state.AddState("Anger", emotionalState.y);
+		state.AddState("Fear", emotionalState.z);
+		state.AddState("Trust", emotionalState.w);
+
+    }
+
+    //public ulong indexOffset;
 	// Use this for initialization
 	void Start () {
 		StateStory.Instance.AddStateObject (this);
@@ -27,6 +41,10 @@ public class StateObject : MonoBehaviour {
 	
 	}
 
+	public void ChangeState (string field, float value) {
+		state.SetState(field,value);
+	}
+
 	public void Select () {
 		gameObject.renderer.material = StateStory.Instance.green;
 	}
@@ -34,7 +52,7 @@ public class StateObject : MonoBehaviour {
 	public void Deselect () {
 		gameObject.renderer.material = StateStory.Instance.red;
 	}
-
+    
     public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted)
     {
         

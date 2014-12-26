@@ -14,16 +14,22 @@ public class Call : StateAction {
 		_possibleNeighbors = new List<AStarNode>();
 		StateNode neighbor = null;
 		StateNode currState = curr as StateNode;
-		if (currState.globalState[currState.stateName].z<=7) {
+		if (currState.globalState[currState.stateName].GetValue("Fear") <= 7f){ // z<=7) {
 			neighbor = new StateNode(currState.globalState);
 
-			
-			neighbor.SetState(currState.stateName,1,0,0,0);
+
+            neighbor.SetGlobalState(currState.stateName, "Joy", 1f);
+            //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
+            //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
+            //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
 			
 			neighbor.actions=StateStory.Instance.actions;
 			string friendName = StateStory.Instance.roles[Role.Character][0].gameObject.name;
-			
-			neighbor.SetState(friendName,1,0,0,0);
+
+            neighbor.SetGlobalState(friendName, "Joy", 1f);
+            //neighbor.SetGlobalState(friendName, "Anger", 0);
+            //neighbor.SetGlobalState(friendName, "Fear", 0);
+            //neighbor.SetGlobalState(friendName, "Trust", 0);
 		}
 		if (neighbor != null) {
 			int numActions = 0;
