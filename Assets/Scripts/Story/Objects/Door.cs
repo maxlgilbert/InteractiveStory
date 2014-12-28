@@ -18,16 +18,14 @@ public class Door : StateObject
 
     void Start()
     {
-    }
-
-    void OnMouseDown()
-    {
         BaseStart();
-        StateStory.Instance.fixedRooms[roomOne].AddDoor(this);
-        StateStory.Instance.fixedRooms[roomTwo].AddDoor(this);
-
+        Initialize delayedStart = () =>
+        {
+            StateStory.Instance.fixedRooms[roomOne].AddDoor(this);
+            StateStory.Instance.fixedRooms[roomTwo].AddDoor(this);
+        };
+        StartCoroutine(DelayedStart(.1f, delayedStart));
     }
-
     public static bool CanGetThrough(string doorName, Dictionary<string, SmartState> globalState)
     {
         if (globalState[doorName].GetValue("Open") == 1.0f)

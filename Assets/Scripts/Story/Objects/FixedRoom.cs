@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class FixedRoom : FixedObject {
 
-	public List<int> adjacentRooms;
-    private List<Door> _doors;
+	//public List<int> adjacentRooms;
+    public List<Door> doors;
 
     void Awake()
     {
-        _doors = new List<Door>();
+        doors = new List<Door>();
     }
 	// Use this for initialization
 	void Start () {
@@ -20,7 +20,7 @@ public class FixedRoom : FixedObject {
 	void Update () {
 	
 	}
-
+/*
 	public bool IsAdjacentTo (int otherRoom) {
 		if (otherRoom == this.roomNumber) {
 			return true;
@@ -28,44 +28,52 @@ public class FixedRoom : FixedObject {
 			return adjacentRooms.Contains(otherRoom);
 		}
 	}
-
+    */
     public void AddDoor(Door door)
     {
-        _doors.Add(door);
+        doors.Add(door);
     }
-
-    public bool RoomsConnected(int otherRoom, Dictionary<string, SmartState> globalState, List<int> visited = null)
+    public static List<FixedRoom> GetConnectedRooms(int room1, Dictionary<string, SmartState> globalState, List<FixedRoom> visited = null)
+    {
+        return visited;
+    }
+    public static bool RoomsConnected(int room1, int room2, Dictionary<string, SmartState> globalState, List<int> visited = null)
     {
         //FixedRoom fixedRoom2 = StateStory.Instance.fixedRooms[room2];
         if (visited == null)
         {
+            if (room1 == room2)
+            {
+                return true;
+            }
             visited = new List<int>();
-            visited.Add(this.roomNumber);
+            visited.Add(room1);
         }
         else
         {
             visited = new List<int>(visited);
         }
-        for (int i = 0; i < _doors.Count; i++)
+        FixedRoom currentRoom = StateStory.Instance.fixedRooms[room1];
+        for (int i = 0; i < currentRoom.doors.Count; i++)
         {
-            if (Door.CanGetThrough(_doors[i].gameObject.name, globalState))
+            if (Door.CanGetThrough(currentRoom.doors[i].gameObject.name, globalState))
             {
                // Debug.LogError("Got through a door");
-                int adjacentRoomNumber = _doors[i].roomOne;
-                if (adjacentRoomNumber == this.roomNumber)
+                int adjacentRoomNumber = currentRoom.doors[i].roomOne;
+                if (adjacentRoomNumber == visited[visited.Count-1])
                 {
-                    adjacentRoomNumber = _doors[i].roomTwo;
+                    adjacentRoomNumber = currentRoom.doors[i].roomTwo;
                 }
                 if (!visited.Contains(adjacentRoomNumber))
                 {
-                    if (adjacentRoomNumber == otherRoom)
+                    if (adjacentRoomNumber == room2)
                     {
                         return true;
                     }
                     else
                     {
                         visited.Add(adjacentRoomNumber);
-                        bool recursion = RoomsConnected(otherRoom, globalState, visited);
+                        bool recursion = RoomsConnected(adjacentRoomNumber, room2, globalState, visited);
                         if (recursion)
                         {
                             return true;

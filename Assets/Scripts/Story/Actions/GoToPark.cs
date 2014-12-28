@@ -24,8 +24,8 @@ public class GoToPark : StateAction {
 			                                      currState.globalState[currState.stateName].w);*/
 
             //neighbor.SetGlobalState(currState.stateName, "Joy", 0);
-            neighbor.SetGlobalState(currState.stateName, "Anger", -2f);
-            neighbor.SetGlobalState(currState.stateName, "Fear", -2f);
+            StateCharacter.SetEmotionalState(currState.stateName, "Anger", -2f,neighbor.globalState);
+            StateCharacter.SetEmotionalState(currState.stateName, "Fear", -2f, neighbor.globalState);
             //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
 			
 			neighbor.actions=StateStory.Instance.actions;

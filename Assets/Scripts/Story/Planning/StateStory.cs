@@ -7,7 +7,8 @@ public class StateStory : MonoBehaviour {
 	public int maxDepth;
 	[HideInInspector] public StateCharacter protagonist;
 	private StateObject _selectedObject;
-	private Dictionary<ulong,StateObject> _stateObjects;
+    private Dictionary<ulong, StateObject> _stateObjects;
+    private List<StateObject> _possibleStateObjects;
 	public Dictionary<int,FixedRoom> fixedRooms;
     private ulong _objectIndex = 1;
 	[HideInInspector] public int selectedState;
@@ -21,9 +22,13 @@ public class StateStory : MonoBehaviour {
 	public List<Vector4> goalStates;
 	private Dictionary<string, Vector4> _goalMap;
 
-	public Dictionary<ulong,AStarAction> actions;
+    public Dictionary<ulong, AStarAction> actions;
+    public List<StateAction> possibleActions;
+    public StateAction selectedAction;
     private StateAction _currentAction;
     private ulong _actionIndex = 0;
+    public int maxActions = 4;
+    public ulong maxPossibleActions = 16;
 
 	private static StateStory instance;
 
@@ -72,6 +77,8 @@ public class StateStory : MonoBehaviour {
 		_failedPath = false;
 		numberOfMoves = new Dictionary<string, Dictionary<int, int>>();
         actions = new Dictionary<ulong, AStarAction>();
+        possibleActions = new List<StateAction>();
+        _possibleStateObjects = new List<StateObject>();
 		fixedRooms = new Dictionary<int, FixedRoom>();
 
 		
@@ -141,14 +148,33 @@ public class StateStory : MonoBehaviour {
     }
     public StateAction GetAction(ulong state)
     {
-        return  actions[3 & state] as StateAction;
+        return  actions[(maxPossibleActions-1) & state] as StateAction;
     }
-    public void AddAction(StateAction stateAction)
+
+    public void AddPossibleAction(StateAction stateAction)
     {
-        actions[_actionIndex] = stateAction;
         stateAction.actionIndex = _actionIndex;
         stateAction.ActionCompleted += PlayNextAction;
         _actionIndex++;
+    }
+    public bool AddAction(StateAction stateAction)
+    {
+        if (actions.Keys.Count < maxActions && !actions.ContainsKey(stateAction.actionIndex))
+        {
+            actions[stateAction.actionIndex] = stateAction;
+            return true;
+        }
+        return false;
+    }
+
+    public bool RemoveAction(StateAction stateAction)
+    {
+        if (actions.ContainsKey(stateAction.actionIndex))
+        {
+            actions.Remove(stateAction.actionIndex);
+            return true;
+        }
+        return false;
     }
     public void PlayNextAction()
     {
@@ -206,21 +232,32 @@ public class StateStory : MonoBehaviour {
 
 	public string initialStateText {
 		get {
-			string returnString = "Adjust the state:\n";
+            string returnString = "";
+            /*returnString += "Adjust the state:\n";
 			returnString += "Moves available: " + this.movesLeft + "\n";
 			returnString += "Current State:\n";
-			returnString += StateToString(_globalState);
-			returnString += "Selected object: " + _selectedObject.gameObject.name;
+			returnString += StateToString(_globalState);*/
+			//returnString += "Selected object: " + _selectedObject.gameObject.name;
+            if (_selectedObject != null)
+            {
+                returnString += _selectedObject.gameObject.name + ": " + _selectedObject.state.ToString();
+            }
 			return returnString;
 		}
 	}
 	
 	public string actionListText {
 		get {
-			string returnString = "Available actions:\n";
-			foreach (StateAction action in actions.Values) {
-				returnString += action.ToString() + "\n";
-			}
+			string returnString = "";
+            returnString += actions.Keys.Count + " out of " + maxActions + " actions allowed\n";
+            if (selectedAction != null)
+            {
+                returnString += selectedAction.ToString();
+            }
+            else if (possibleActions.Count != 0)
+            {
+                returnString += possibleActions[0].ToString();
+            }
 			return returnString;
 		}
 	}
@@ -228,7 +265,7 @@ public class StateStory : MonoBehaviour {
     public List<StateObject> GetObjects(ulong state)
     {
         List<StateObject> objects = new List<StateObject>();
-        ulong objectIndex = 4;
+        ulong objectIndex = maxPossibleActions;
         for (int i = 0; i < _stateObjects.Values.Count; i++ )
         {
             if ((state & objectIndex) == objectIndex)
@@ -319,34 +356,50 @@ public class StateStory : MonoBehaviour {
 		fixedRooms[fixedRoom.roomNumber] =  fixedRoom;
 	}
 
-	public void AddStateObject (StateObject stateObject) {
-		_stateObjects[_objectIndex*4] = stateObject;
-        stateObject.objectIndex = _objectIndex*4;
-        _objectIndex*=2;
-		StateCharacter character = stateObject as StateCharacter;
-		if (character != null) {
-			_globalState.Add (character.name, character.emotionalState);
-		}
-		if (roles.ContainsKey(stateObject.role)) {
-			roles[stateObject.role].Add(stateObject);
-		} else {
-			List<StateObject> names = new List<StateObject>();
-			names.Add (stateObject);
-			roles[stateObject.role] = names;
-		}
-		numberOfMoves[stateObject.name] = new Dictionary<int, int>();
-		for (int i = 0; i < 4; i++) {
-			numberOfMoves[stateObject.name][i] = 0;
-		}
-		if (stateObject.role == Role.Protagonist) {
-			protagonist = character;
-		}
+    public void AddPossibleObject(StateObject stateObject)
+    {
+        _possibleStateObjects.Add(stateObject);
+        stateObject.objectIndex = _objectIndex * maxPossibleActions;
+        _objectIndex *= 2;
+        if (stateObject.role == Role.Protagonist)
+        {
+            protagonist = stateObject as StateCharacter;
+        }
+    }
+
+    public void AddStateObject(StateObject stateObject)
+    {
+        _stateObjects[stateObject.objectIndex] = stateObject;
+        StateCharacter character = stateObject as StateCharacter;
+        if (character != null)
+        {
+            _globalState.Add(character.name, character.emotionalState);
+        }
+        if (roles.ContainsKey(stateObject.role))
+        {
+            roles[stateObject.role].Add(stateObject);
+        }
+        else
+        {
+            List<StateObject> names = new List<StateObject>();
+            names.Add(stateObject);
+            roles[stateObject.role] = names;
+        }
+        numberOfMoves[stateObject.name] = new Dictionary<int, int>();
+        for (int i = 0; i < 4; i++)
+        {
+            numberOfMoves[stateObject.name][i] = 0;
+        }
+		
 	}
     public void StartStory()
     {
+        clearPath();
         Dictionary<string, SmartState> startState = new Dictionary<string, SmartState>();
 		foreach (StateObject stateObject in _stateObjects.Values) {
 			startState[stateObject.gameObject.name] = new SmartState(stateObject.state);
+            //Debug.LogError(stateObject.gameObject.name);
+            //Debug.LogError(stateObject.state.ToString());
 		}
         _start = new StateNode(startState);
 
@@ -376,10 +429,13 @@ public class StateStory : MonoBehaviour {
 	
 	
 	public void clearPath () {
-		_start.clear();
-		_goal.clear();
-		_aStar.Reset();
-		_plan = new List<AStarNode>();
+        if (_start != null)
+        {
+            _start.clear();
+            _goal.clear();
+            _aStar.Reset();
+            _plan = new List<AStarNode>();
+        }
 		
 	}
 }

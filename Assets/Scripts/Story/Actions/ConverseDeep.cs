@@ -27,7 +27,7 @@ public class ConverseDeep : StateAction {
             //neighbor.SetGlobalState(currState.stateName, "Joy", 0);
             //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
             //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
-            neighbor.SetGlobalState(currState.stateName, "Trust", 3f);
+            StateCharacter.SetEmotionalState(currState.stateName, "Trust", 3f,neighbor.globalState);
 			
 			neighbor.actions=StateStory.Instance.actions;
 		}

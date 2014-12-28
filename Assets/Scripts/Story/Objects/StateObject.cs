@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 public enum Role {
 	Protagonist,
 	Character
@@ -32,7 +33,7 @@ public class StateObject : StoryObject {
     protected void BaseStart()
     {
         state.AddState("Room", roomNumber); //TODO Standardizes these strings somehow (static constant somewhere)
-        StateStory.Instance.AddStateObject(this);
+        StateStory.Instance.AddPossibleObject(this);
     }
 
 	void OnMouseDown () {
@@ -64,6 +65,8 @@ public class StateObject : StoryObject {
             gameObject.transform.position = hit.point;
             StoryObject receiver = hit.collider.gameObject.GetComponent<StoryObject>();
             ChangeState("Room", receiver.roomNumber);
+            StateStory.Instance.AddStateObject(this);
+            //Debug.LogError(
             OnStateChanged();
         }
         else
@@ -131,5 +134,10 @@ public class StateObject : StoryObject {
     {
         yield return new WaitForSeconds(duration);
         actionCompleted();
+    }
+
+    public static void SetGlobalState(string stateToChange, string field, float value, Dictionary<string,SmartState> globalState)
+    {
+        globalState[stateToChange].SetState(field, value);
     }
 }

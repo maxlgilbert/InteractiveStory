@@ -12,4 +12,11 @@ public class StoryObject : MonoBehaviour {
 	void Update () {
 	
 	}
+    
+    protected delegate void Initialize();
+    protected IEnumerator DelayedStart(float duration, Initialize delayedStart)
+    {
+        yield return new WaitForSeconds(duration);
+        delayedStart();
+    }
 }

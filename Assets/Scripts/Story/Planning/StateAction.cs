@@ -7,7 +7,8 @@ using System.Collections.Generic;
 public class StateAction : AStarAction {
 	void Start () {
 		//StateStory.Instance.actions.Add(this);
-		identification = gameObject.name;
+        identification = gameObject.name;
+        StateStory.Instance.AddPossibleAction(this);
 	}
 	public override List<AStarNode> TryAction (AStarNode curr)
 	{
@@ -16,7 +17,22 @@ public class StateAction : AStarAction {
     void OnMouseDown()
     {
         //StateStory.Instance.actions[this.actionIndex] = this;
-        StateStory.Instance.AddAction(this);
+        if (!StateStory.Instance.actions.ContainsValue(this))
+        {
+            if (StateStory.Instance.AddAction(this))
+            {
+                Select();
+            }
+        }
+        else
+        {
+            if (StateStory.Instance.RemoveAction(this))
+            {
+                Deselect();
+            }
+        }
+        StateStory.Instance.selectedAction = this;
+
     }
 
 	public override string ToString () {
@@ -36,4 +52,15 @@ public class StateAction : AStarAction {
     {
         OnActionCompleted();
     }
+
+    public void Select()
+    {
+        gameObject.renderer.material = StateStory.Instance.green;
+    }
+
+    public void Deselect()
+    {
+        gameObject.renderer.material = StateStory.Instance.red;
+    }
+    
 }

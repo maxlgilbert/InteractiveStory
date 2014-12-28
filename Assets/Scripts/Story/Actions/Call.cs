@@ -18,7 +18,7 @@ public class Call : StateAction {
 			neighbor = new StateNode(currState.globalState);
 
 
-            neighbor.SetGlobalState(currState.stateName, "Joy", 1f);
+            StateCharacter.SetEmotionalState(currState.stateName, "Joy", 1f,neighbor.globalState);
             //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
             //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
             //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
@@ -26,7 +26,7 @@ public class Call : StateAction {
 			neighbor.actions=StateStory.Instance.actions;
 			string friendName = StateStory.Instance.roles[Role.Character][0].gameObject.name;
 
-            neighbor.SetGlobalState(friendName, "Joy", 1f);
+            StateCharacter.SetEmotionalState(friendName, "Joy", 1f, neighbor.globalState);
             //neighbor.SetGlobalState(friendName, "Anger", 0);
             //neighbor.SetGlobalState(friendName, "Fear", 0);
             //neighbor.SetGlobalState(friendName, "Trust", 0);

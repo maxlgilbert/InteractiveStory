@@ -38,7 +38,7 @@ public class BecomeFriends : StateAction {
         {
 			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
 				string friendName = StateStory.Instance.roles[Role.Character][i].gameObject.name;
-				if (StateStory.Instance.fixedRooms[(int) currState.globalState[currState.stateName].GetValue("Room")].RoomsConnected((int)currState.globalState[friendName].GetValue("Room"),currState.globalState)
+				if (FixedRoom.RoomsConnected((int) currState.globalState[currState.stateName].GetValue("Room"),(int)currState.globalState[friendName].GetValue("Room"),currState.globalState)
 				    && currState.globalState[friendName].GetValue("Anger") <= 5 && currState.globalState[friendName].GetValue("Trust") >= 5)
                 {
 					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
@@ -50,7 +50,7 @@ public class BecomeFriends : StateAction {
 					                                      currState.globalState[currState.stateName].w);*/
 
 
-                    neighbor.SetGlobalState(currState.stateName, "Joy", 5f);
+                    StateCharacter.SetEmotionalState(currState.stateName, "Joy", 5f,neighbor.globalState);
                     //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
                     //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
                     //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
@@ -64,7 +64,7 @@ public class BecomeFriends : StateAction {
 
 
 
-                    neighbor.SetGlobalState(friendName, "Joy", 5f);
+                    StateCharacter.SetEmotionalState(friendName, "Joy", 5f, neighbor.globalState);
                     //neighbor.SetGlobalState(friendName, "Anger", 0);
                     //neighbor.SetGlobalState(friendName, "Fear", 0);
                     //neighbor.SetGlobalState(friendName, "Trust", 0);

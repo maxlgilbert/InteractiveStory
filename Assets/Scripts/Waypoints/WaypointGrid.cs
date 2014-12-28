@@ -131,11 +131,11 @@ public class WaypointGrid : MonoBehaviour {
 			i++;
 		}
 
-		if (Input.GetKeyDown(KeyCode.W)) {
+		/*if (Input.GetKeyDown(KeyCode.W)) {
 			foreach (AStarNode node in _aStar.FindPath (start, goal)) {
 //				_lineToDraw.Add(node.gameObject.transform.position);
 			}
-		}
+		}*/
 		if (Input.GetKeyDown(KeyCode.C)) {
 			clearPath ();
 			UpdateNeighbors();

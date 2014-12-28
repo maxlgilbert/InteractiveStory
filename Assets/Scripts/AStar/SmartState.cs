@@ -89,4 +89,17 @@ public class SmartState {
         }
         return true;
     }
+
+    public override string ToString()
+    {
+        string stateString = "";
+        foreach (string key in _state.Keys)
+        {
+            stateString += key;
+            stateString += ": ";
+            stateString += _state[key];
+            stateString += "; ";
+        }
+        return stateString;
+    }
 }
