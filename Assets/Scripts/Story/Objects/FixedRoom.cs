@@ -56,7 +56,7 @@ public class FixedRoom : FixedObject {
         FixedRoom currentRoom = StateStory.Instance.fixedRooms[room1];
         for (int i = 0; i < currentRoom.doors.Count; i++)
         {
-            if (Door.CanGetThrough(currentRoom.doors[i].gameObject.name, globalState))
+            if (Door.IsOpen(currentRoom.doors[i].gameObject.name, globalState) && !Door.IsGuarded(currentRoom.doors[i].gameObject.name, globalState))
             {
                // Debug.LogError("Got through a door");
                 int adjacentRoomNumber = currentRoom.doors[i].roomOne;

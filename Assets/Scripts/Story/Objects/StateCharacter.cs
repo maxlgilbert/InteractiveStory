@@ -13,7 +13,8 @@ public class StateCharacter : StateObject {
 		state.AddState("Joy", emotionalState.x);
 		state.AddState("Anger", emotionalState.y);
 		state.AddState("Fear", emotionalState.z);
-		state.AddState("Trust", emotionalState.w);
+        state.AddState("Trust", emotionalState.w);
+        state.AddState(Gun.StateName, 0);
 	}
 
     public static void SetEmotionalState(string stateToChange, string field, float value, System.Collections.Generic.Dictionary<string, SmartState> globalState)

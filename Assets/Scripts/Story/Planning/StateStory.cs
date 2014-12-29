@@ -8,7 +8,9 @@ public class StateStory : MonoBehaviour {
 	[HideInInspector] public StateCharacter protagonist;
 	private StateObject _selectedObject;
     private Dictionary<ulong, StateObject> _stateObjects;
+    private Dictionary<string, StateObject> _stateObjectNames;
     private List<StateObject> _possibleStateObjects;
+    public int maxObjects;
 	public Dictionary<int,FixedRoom> fixedRooms;
     private ulong _objectIndex = 1;
 	[HideInInspector] public int selectedState;
@@ -27,7 +29,7 @@ public class StateStory : MonoBehaviour {
     public StateAction selectedAction;
     private StateAction _currentAction;
     private ulong _actionIndex = 0;
-    public int maxActions = 4;
+    public int maxActions;
     public ulong maxPossibleActions = 16;
 
 	private static StateStory instance;
@@ -72,7 +74,8 @@ public class StateStory : MonoBehaviour {
 			}
 		}
 		_selectedObject = protagonist;
-		_stateObjects = new Dictionary<ulong,StateObject> ();
+        _stateObjects = new Dictionary<ulong, StateObject>();
+        _stateObjectNames = new Dictionary<string, StateObject>();
 		selectedState = 0;
 		_failedPath = false;
 		numberOfMoves = new Dictionary<string, Dictionary<int, int>>();
@@ -262,6 +265,37 @@ public class StateStory : MonoBehaviour {
 		}
 	}
 
+    public string objectText
+    {
+        get
+        {
+            string returnString = "";
+            returnString += objectsInUse + " out of " + maxObjects + " characters or objects allowed\n";
+            return returnString;
+        }
+    }
+
+    public int objectsInUse
+    {
+        get
+        {
+            int numObjects = _stateObjects.Count;
+            foreach (StateObject stateObject in _stateObjects.Values)
+            {
+                if (stateObject.InScene)
+                {
+                    numObjects--;
+                }
+            }
+            return numObjects;
+        }
+
+    }
+
+    public StateObject GetStateObject(string objectName)
+    {
+        return _stateObjectNames[objectName];
+    }
     public List<StateObject> GetObjects(ulong state)
     {
         List<StateObject> objects = new List<StateObject>();
@@ -367,31 +401,56 @@ public class StateStory : MonoBehaviour {
         }
     }
 
-    public void AddStateObject(StateObject stateObject)
+    public bool AddStateObject(StateObject stateObject)
     {
-        _stateObjects[stateObject.objectIndex] = stateObject;
-        StateCharacter character = stateObject as StateCharacter;
-        if (character != null)
+        if (objectsInUse < maxObjects && !_stateObjects.ContainsKey(stateObject.objectIndex))
         {
-            _globalState.Add(character.name, character.emotionalState);
-        }
-        if (roles.ContainsKey(stateObject.role))
-        {
-            roles[stateObject.role].Add(stateObject);
+            _stateObjects[stateObject.objectIndex] = stateObject;
+            _stateObjectNames[stateObject.gameObject.name] = stateObject;
+            StateCharacter character = stateObject as StateCharacter;
+            if (character != null)
+            {
+                _globalState.Add(character.name, character.emotionalState);
+            }
+            if (roles.ContainsKey(stateObject.role))
+            {
+                roles[stateObject.role].Add(stateObject);
+            }
+            else
+            {
+                List<StateObject> names = new List<StateObject>();
+                names.Add(stateObject);
+                roles[stateObject.role] = names;
+            }
+            numberOfMoves[stateObject.name] = new Dictionary<int, int>();
+            for (int i = 0; i < 4; i++)
+            {
+                numberOfMoves[stateObject.name][i] = 0;
+            }
+            return true;
         }
         else
         {
-            List<StateObject> names = new List<StateObject>();
-            names.Add(stateObject);
-            roles[stateObject.role] = names;
-        }
-        numberOfMoves[stateObject.name] = new Dictionary<int, int>();
-        for (int i = 0; i < 4; i++)
-        {
-            numberOfMoves[stateObject.name][i] = 0;
+            return false;
         }
 		
 	}
+
+    public void RemoveStatebject(StateObject stateObject)
+    {
+        _stateObjects.Remove(stateObject.objectIndex);
+        _stateObjectNames.Remove(stateObject.gameObject.name);
+        StateCharacter character = stateObject as StateCharacter;
+        if (character != null)
+        {
+            _globalState.Remove(character.name);
+        }
+        if (roles.ContainsKey(stateObject.role))
+        {
+            roles[stateObject.role].Remove(stateObject);
+        }
+        numberOfMoves.Remove(stateObject.name);
+    }
     public void StartStory()
     {
         clearPath();
@@ -422,7 +481,7 @@ public class StateStory : MonoBehaviour {
 	
 	public void UpdateNeighbors () {
 		_start.UpdateNeighbors();
-		_goal.UpdateNeighbors();
+		//_goal.UpdateNeighbors();
 		
 	}
 

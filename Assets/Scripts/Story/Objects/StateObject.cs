@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 public enum Role {
 	Protagonist,
-	Character
+	Character,
+    Guard,
+    Gun
 }
 
 public class StateObject : StoryObject {
@@ -16,6 +18,8 @@ public class StateObject : StoryObject {
     public bool moveable;
 
     public ulong objectIndex;
+
+    public bool InScene;
 
     private Vector3 _previousPosition;
     void Awake()
@@ -34,6 +38,10 @@ public class StateObject : StoryObject {
     {
         state.AddState("Room", roomNumber); //TODO Standardizes these strings somehow (static constant somewhere)
         StateStory.Instance.AddPossibleObject(this);
+        if (InScene)
+        {
+            StateStory.Instance.AddStateObject(this);
+        }
     }
 
 	void OnMouseDown () {
@@ -57,23 +65,54 @@ public class StateObject : StoryObject {
 
     void OnMouseUp()
     {
-        int layerMask = 1 << 9;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 100, layerMask))
+        if (moveable)
         {
-            gameObject.transform.position = hit.point;
-            StoryObject receiver = hit.collider.gameObject.GetComponent<StoryObject>();
-            ChangeState("Room", receiver.roomNumber);
-            StateStory.Instance.AddStateObject(this);
-            //Debug.LogError(
-            OnStateChanged();
-        }
-        else
-        {
+            int layerMask = 1 << 9;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            //bool returnToPrevious = true;
+            if (Physics.Raycast(ray, out hit, 100, layerMask))
+            {
+                gameObject.transform.position = hit.point;
+                StoryObject receiver = hit.collider.gameObject.GetComponent<StoryObject>();
+                if (receiver.roomNumber == -1)
+                {
+                    if (this.roomNumber != -1 && !this.InScene)
+                    {
+                        ChangeState("Room", receiver.roomNumber);
+                        this.roomNumber = -1;
+                        StateStory.Instance.RemoveStatebject(this);
+                        return;
+                    }
+                    else if (this.roomNumber == -1)
+                    {
+                        return;
+                    }
+                }
+                else if (this.roomNumber == -1)
+                {
+                    if (StateStory.Instance.AddStateObject(this))
+                    {
+                        ChangeState("Room", receiver.roomNumber);
+                        //Debug.LogError(
+                        OnStateChanged();
+                        this.roomNumber = receiver.roomNumber;
+                        return;
+                    }
+                }
+                else
+                {
+                    ChangeState("Room", receiver.roomNumber);
+                    //Debug.LogError(
+                    OnStateChanged();
+                    this.roomNumber = receiver.roomNumber;
+                    return;
+                }
+            }
             StateAction.ActionCompletedHandler nothingChanged = () => OnNothingChanged();
             MoveToWithin(_previousPosition, 0.2f, nothingChanged);
         }
+
     }
 	
 	// Update is called once per frame

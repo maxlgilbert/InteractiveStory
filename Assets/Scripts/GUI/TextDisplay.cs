@@ -4,7 +4,8 @@ using System.Collections;
 public enum DisplayType {
 	Story,
 	States,
-	Actions
+	Actions,
+    Objects
 }
 public class TextDisplay : MonoBehaviour {
 	public TextMesh text;
@@ -16,12 +17,21 @@ public class TextDisplay : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (displayType == DisplayType.Story) {
-			text.text = StateStory.Instance.storyBoardText;
-		} else if (displayType == DisplayType.States) {
-			text.text = StateStory.Instance.initialStateText;
-		} else if (displayType == DisplayType.Actions) {
-			text.text = StateStory.Instance.actionListText;
-		}
+        if (displayType == DisplayType.Story)
+        {
+            text.text = StateStory.Instance.storyBoardText;
+        }
+        else if (displayType == DisplayType.States)
+        {
+            text.text = StateStory.Instance.initialStateText;
+        }
+        else if (displayType == DisplayType.Actions)
+        {
+            text.text = StateStory.Instance.actionListText;
+        }
+        else if (displayType == DisplayType.Objects)
+        {
+            text.text = StateStory.Instance.objectText;
+        }
 	}
 }

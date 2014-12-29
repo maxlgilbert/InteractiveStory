@@ -21,7 +21,8 @@ public class OpenDoor : StateAction {
             List<Door> doors = StateStory.Instance.fixedRooms[roomNumber].doors;
             for (int i = 0; i < doors.Count; i++)
             {
-                if (!Door.CanGetThrough(doors[i].gameObject.name, currState.globalState))
+                if (!Door.IsGuarded(doors[i].gameObject.name, currState.globalState) &
+                    !Door.IsOpen(doors[i].gameObject.name, currState.globalState))
                 {
                     neighbor = new StateNode(currState.globalState);
 
