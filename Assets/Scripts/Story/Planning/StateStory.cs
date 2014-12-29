@@ -315,7 +315,7 @@ public class StateStory : MonoBehaviour {
 	}
 
 	public void SetSelectedObject (StateObject stateObject) {
-		foreach (StateObject stateObjectVal in _stateObjects.Values) {
+		foreach (StateObject stateObjectVal in _possibleStateObjects) {
 			stateObjectVal.Deselect();
 		}
 		stateObject.Select ();

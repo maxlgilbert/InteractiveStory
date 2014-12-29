@@ -26,9 +26,18 @@ public class ShootGuard : StateAction {
                     for (int i = 0; i < guards.Count; i++)
                     {
                         SmartState guardState = currState.globalState[guards[i].gameObject.name];
-                        if (FixedRoom.RoomsConnected(roomNumber,(int)guardState.GetValue("Room"),currState.globalState))
+                        if (FixedRoom.RoomsConnected(roomNumber,(int)guardState.GetValue("Room"),currState.globalState,true))
                         {
                             neighbor = new StateNode(currState.globalState);
+
+                            for (int k = 0; k < StateStory.Instance.roles[Role.Character].Count; k++)
+                            {
+                                string friendName = StateStory.Instance.roles[Role.Character][k].gameObject.name;
+                                StateCharacter.SetEmotionalState(friendName, "Joy", -5f, neighbor.globalState);
+                                StateCharacter.SetEmotionalState(friendName, "Anger", 5f, neighbor.globalState);
+                                StateCharacter.SetEmotionalState(friendName, "Fear", 5f, neighbor.globalState);
+                                StateCharacter.SetEmotionalState(friendName, "Trust", -5f, neighbor.globalState);
+                            }
                             StateCharacter.SetGlobalState(guards[i].gameObject.name, "Room", StateStory.Instance.fixedRooms.Count, neighbor.globalState);
 
                             neighbor.actions = StateStory.Instance.actions;

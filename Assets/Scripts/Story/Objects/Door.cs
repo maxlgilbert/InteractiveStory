@@ -10,6 +10,7 @@ public class Door : StateObject
 
     void Awake()
     {
+        this.role = Role.Door;
         state = new SmartState();
         int openOrClosed = 0;
         if (open) openOrClosed = 1;

@@ -5,7 +5,10 @@ public enum Role {
 	Protagonist,
 	Character,
     Guard,
-    Gun
+    Gun,
+    Radio,
+    Artifact,
+    Door
 }
 
 public class StateObject : StoryObject {

@@ -37,7 +37,7 @@ public class FixedRoom : FixedObject {
     {
         return visited;
     }
-    public static bool RoomsConnected(int room1, int room2, Dictionary<string, SmartState> globalState, List<int> visited = null)
+    public static bool RoomsConnected(int room1, int room2, Dictionary<string, SmartState> globalState, bool isGuard, List<int> visited = null)
     {
         //FixedRoom fixedRoom2 = StateStory.Instance.fixedRooms[room2];
         if (visited == null)
@@ -56,7 +56,7 @@ public class FixedRoom : FixedObject {
         FixedRoom currentRoom = StateStory.Instance.fixedRooms[room1];
         for (int i = 0; i < currentRoom.doors.Count; i++)
         {
-            if (Door.IsOpen(currentRoom.doors[i].gameObject.name, globalState) && !Door.IsGuarded(currentRoom.doors[i].gameObject.name, globalState))
+            if (isGuard || ( Door.IsOpen(currentRoom.doors[i].gameObject.name, globalState) && !Door.IsGuarded(currentRoom.doors[i].gameObject.name, globalState)))
             {
                // Debug.LogError("Got through a door");
                 int adjacentRoomNumber = currentRoom.doors[i].roomOne;
@@ -73,7 +73,7 @@ public class FixedRoom : FixedObject {
                     else
                     {
                         visited.Add(adjacentRoomNumber);
-                        bool recursion = RoomsConnected(adjacentRoomNumber, room2, globalState, visited);
+                        bool recursion = RoomsConnected(adjacentRoomNumber, room2, globalState, isGuard, visited);
                         if (recursion)
                         {
                             return true;

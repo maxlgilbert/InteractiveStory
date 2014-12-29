@@ -7,22 +7,32 @@ public class OpenDoor : StateAction {
 	{
 		return "You opened ";
 	}
-	public override List<AStarNode> TryAction (AStarNode curr)
-	{
+    public override List<AStarNode> TryAction(AStarNode curr)
+    {
         //If meets requirements
         _possibleNeighbors = new List<AStarNode>();
         StateNode neighbor = null;
         StateNode currState = curr as StateNode;
         SmartState protag = currState.globalState[currState.stateName];
-        int roomNumber = (int) protag.GetValue("Room");
+        int roomNumber = (int)protag.GetValue("Room");
         //Debug.LogError(roomNumber);
         if (StateStory.Instance.fixedRooms.ContainsKey(roomNumber))
         {
-            List<Door> doors = StateStory.Instance.fixedRooms[roomNumber].doors;
+            List<StateObject> doorObjects = StateStory.Instance.roles[Role.Door];
+            List<Door> doors = new List<Door>();
+            foreach (StateObject doorObject in doorObjects)
+            {
+                Door door = doorObject as Door;
+                doors.Add(door);
+            }
             for (int i = 0; i < doors.Count; i++)
             {
-                if (!Door.IsGuarded(doors[i].gameObject.name, currState.globalState) &
-                    !Door.IsOpen(doors[i].gameObject.name, currState.globalState))
+                int doorRoom1 = doors[i].roomOne;
+                int doorRoom2 = doors[i].roomTwo;
+                if (!Door.IsGuarded(doors[i].gameObject.name, currState.globalState) &&
+                    !Door.IsOpen(doors[i].gameObject.name, currState.globalState) &&
+                    (FixedRoom.RoomsConnected(roomNumber, doorRoom1, currState.globalState, false) ||
+                    FixedRoom.RoomsConnected(roomNumber, doorRoom2, currState.globalState, false)))
                 {
                     neighbor = new StateNode(currState.globalState);
 
@@ -57,7 +67,7 @@ public class OpenDoor : StateAction {
             }
         }
         return _possibleNeighbors;
-	}
+    }
 
 	public override string ToString ()
 	{

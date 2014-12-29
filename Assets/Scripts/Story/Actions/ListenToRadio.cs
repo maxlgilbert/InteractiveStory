@@ -2,36 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PickUpGun : StateAction {
+public class ListenToRadio : StateAction {
 	public override string GetActionText ()
 	{
-		return "You picked up ";
+		return " went to investigate ";
 	}
-	public override List<AStarNode> TryAction (AStarNode curr)
-	{
+    public override List<AStarNode> TryAction(AStarNode curr)
+    {
         //If meets requirements
         _possibleNeighbors = new List<AStarNode>();
         StateNode neighbor = null;
         StateNode currState = curr as StateNode;
-        SmartState protag = currState.globalState[currState.stateName];
-        int roomNumber = (int) protag.GetValue("Room");
-        //Debug.LogError(roomNumber);
-        if (StateStory.Instance.fixedRooms.ContainsKey(roomNumber))
+
+        List<StateObject> radios = new List<StateObject>();
+        if (StateStory.Instance.roles.TryGetValue(Role.Radio, out radios))
         {
-            if (protag.GetValue(Gun.StateName) != 1.0f)
+            List<StateObject> guards = new List<StateObject>();
+            if (StateStory.Instance.roles.TryGetValue(Role.Guard, out guards))
             {
-                List<StateObject> guns = new List<StateObject>();
-                if (StateStory.Instance.roles.TryGetValue(Role.Gun, out guns))
+                for (int i = 0; i < guards.Count; i++)
                 {
-                    for (int i = 0; i < guns.Count; i++)
+                    for (int k = 0; k < radios.Count; k++)
                     {
-                        SmartState gunState = currState.globalState[guns[i].gameObject.name];
-                        if (FixedRoom.RoomsConnected(roomNumber, (int)gunState.GetValue("Room"), currState.globalState, false))
+                        SmartState radioState = currState.globalState[radios[k].gameObject.name];
+                        SmartState guardState = currState.globalState[guards[i].gameObject.name];
+                        if (FixedRoom.RoomsConnected((int)radioState.GetValue("Room"), (int)guardState.GetValue("Room"), currState.globalState, true))
                         {
                             neighbor = new StateNode(currState.globalState);
-
-
-                            StateCharacter.SetGlobalState(currState.stateName, Gun.StateName, 1.0f, neighbor.globalState);
+                            StateCharacter.SetGlobalState(guards[i].gameObject.name, "Room", (int)radioState.GetValue("Room"), neighbor.globalState);
 
                             neighbor.actions = StateStory.Instance.actions;
 
@@ -39,7 +37,7 @@ public class PickUpGun : StateAction {
                             for (int j = 0; j < curr.parentActions.Count; j++)
                             {
                                 neighbor.parentActions.Add(curr.parentActions[j]);
-                                if (curr.parentActions[j] == (this.GetActionText() + guns[i].gameObject.name))
+                                if (curr.parentActions[j] == (guards[i].gameObject.name + this.GetActionText() + radios[k].gameObject.name))
                                 {
                                     numActions++;
                                 }
@@ -48,7 +46,7 @@ public class PickUpGun : StateAction {
                             {
                                 neighbor.actionID = this.actionIndex;
                                 neighbor.actionID |= StateStory.Instance.protagonist.objectIndex;
-                                neighbor.parentActions.Add(this.GetActionText() + guns[i].gameObject.name);
+                                neighbor.parentActions.Add(guards[i].gameObject.name + this.GetActionText() + radios[k].gameObject.name);
                                 _possibleNeighbors.Add(neighbor);
                             }
                         }
@@ -57,13 +55,13 @@ public class PickUpGun : StateAction {
             }
         }
         return _possibleNeighbors;
-	}
+    }
 
 	public override string ToString ()
 	{
 		string returnString = gameObject.name + "\n";
-		returnString += "Requirements: gun reachable.\n";
-		returnString += "Results: pick up gun.";
+		returnString += "Requirements: radio reachable.\n";
+		returnString += "Results: character goes to investiagte noise.";
 		return returnString;
 	}
 
