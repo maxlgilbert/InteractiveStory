@@ -100,10 +100,8 @@ public class BecomeFriends : StateAction {
 		return returnString;
 	}
 
-    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public override void EnactAction(string actionText)
     {
-        ActionCompletedHandler actionCompleted = () => OnActionCompleted();
-        Actors[0].MoveToWithin(Actors[1].gameObject.transform.position,1.0f,actionCompleted);
-        //OnActionCompleted();
+        base.EnactAction(actionText);
     }
 }

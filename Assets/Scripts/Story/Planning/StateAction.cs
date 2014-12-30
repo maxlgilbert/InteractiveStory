@@ -48,7 +48,7 @@ public class StateAction : AStarAction {
             ActionCompleted();
         }
     }
-    public virtual void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public virtual void EnactAction(string actionText)
     {
         OnActionCompleted();
     }

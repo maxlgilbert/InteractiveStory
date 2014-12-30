@@ -60,9 +60,8 @@ public class GoToPark : StateAction {
 		return returnString;
 	}
 
-    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public override void EnactAction(string actionText)
     {
-        ActionCompletedHandler actionCompleted = () => OnActionCompleted();
-        Actors[0].WaitFor(2.0f, actionCompleted);
+        base.EnactAction(actionText);
     }
 }

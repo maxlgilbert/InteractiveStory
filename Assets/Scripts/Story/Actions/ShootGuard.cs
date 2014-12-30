@@ -74,10 +74,17 @@ public class ShootGuard : StateAction {
 		return returnString;
 	}
 
-    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public override void EnactAction(string actionText)
     {
-        //ActionCompletedHandler actionCompleted = () => OnActionCompleted();
-        //Actors[0].WaitFor(2.0f, actionCompleted);
-        base.EnactAction(Actors, Objects);
+        string[] actionWords = actionText.Split(new char[] { ' ', '.' });
+        StateObject guard = StateStory.Instance.GetStateObject(actionWords[actionWords.Length - 1]);
+        Vector3 guardLocation = guard.gameObject.transform.position;
+        ActionCompletedHandler shootGuard = () =>
+        {
+            //gun.gameObject.transform.parent = StateStory.Instance.protagonist.transform;
+            OnActionCompleted();
+        };
+        //doorToOpen.MoveToWithin(newDoorLocation, 1.0f, actionCompleted);
+        StateStory.Instance.protagonist.MoveToWithin(guardLocation, 3.0f, shootGuard);
     }
 }

@@ -65,10 +65,12 @@ public class ListenToRadio : StateAction {
 		return returnString;
 	}
 
-    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public override void EnactAction(string actionText)
     {
-        //ActionCompletedHandler actionCompleted = () => OnActionCompleted();
-        //Actors[0].WaitFor(2.0f, actionCompleted);
-        base.EnactAction(Actors, Objects);
+        string[] actionWords = actionText.Split(new char[] { ' ', '.' });
+        StateObject guard = StateStory.Instance.GetStateObject(actionWords[0]);
+        StateObject radio = StateStory.Instance.GetStateObject(actionWords[actionWords.Length - 1]);
+        Vector3 radioLoaction = radio.gameObject.transform.position;
+        guard.MoveToWithin(radioLoaction, 1.0f, OnActionCompleted);
     }
 }

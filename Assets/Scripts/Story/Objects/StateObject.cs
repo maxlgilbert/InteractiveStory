@@ -24,6 +24,8 @@ public class StateObject : StoryObject {
 
     public bool InScene;
 
+    public bool stuckAtZero;
+
     private Vector3 _previousPosition;
     void Awake()
     {
@@ -124,7 +126,7 @@ public class StateObject : StoryObject {
 	}
 
     public event StateAction.ActionCompletedHandler StateChanged;
-    protected virtual void OnNothingChanged()
+    public virtual void OnNothingChanged()
     {
 
     }
@@ -147,19 +149,97 @@ public class StateObject : StoryObject {
 	public void Deselect () {
 		gameObject.renderer.material = StateStory.Instance.red;
 	}
-    
-    public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted)
+
+    public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted, List<int> roomsVisited = null)
     {
-        
-        StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed, actionCompleted));
+        int layerMask = 1 << 9;
+       // Ray ray =  Camera.main.ScreenPointToRay(newPosition);
+        RaycastHit hit;
+        StoryObject receiver = null;
+        Vector3 rayOrigin = newPosition;
+        rayOrigin.y += 20;
+        if (Physics.Raycast(rayOrigin, new Vector3(0,-1,0),out hit, 100, layerMask))
+        {
+            receiver = hit.collider.gameObject.GetComponent<StoryObject>();
+        }
+        if (receiver != null)
+        {
+            FixedRoom targetRoom = StateStory.Instance.fixedRooms[receiver.roomNumber];
+            if (targetRoom.roomNumber != this.roomNumber)
+            {
+                FixedRoom currentRoom = StateStory.Instance.fixedRooms[this.roomNumber];
+                List<Door> doors = currentRoom.FindPath(targetRoom.roomNumber);
+                StateAction.ActionCompletedHandler finalAction = () =>
+                {
+                    StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed, actionCompleted));
+                    this.roomNumber = receiver.roomNumber;
+                };
+                MoveAlongDoors(doors, finalAction);
+
+
+                    /*
+                for (int i = 0; i < doors.Count; i++)
+                {
+                    Door door = doors[i];
+                    int nextRoomNumber = door.roomOne;
+                    if (nextRoomNumber == this.roomNumber) nextRoomNumber = door.roomTwo;
+                    if (!roomsVisited.Contains(nextRoomNumber)) //nextRoomNumber has not been visited
+                    {
+                        Debug.LogError(4);
+                        StateAction.ActionCompletedHandler tryMovingAgain = () =>
+                        {
+                            this.roomNumber = nextRoomNumber;
+                            MoveToWithin(newPosition, stoppingRadius, actionCompleted,roomsVisited);
+                        };
+                        Vector3 intermediatePosition = door.transform.position;
+                        intermediatePosition.y = 0;
+                        StartCoroutine(MoveToAtSpeed(intermediatePosition, 1.0f, this.speed, tryMovingAgain));
+                        break;
+                    }
+                }*/
+            }
+            else
+            {
+                StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed, actionCompleted));
+            }
+        }
+        else
+        {
+            Debug.LogError("oops did this happen");
+            //StartCoroutine(MoveToAtSpeed(newPosition, stoppingRadius, this.speed, actionCompleted));
+        }
+    }
+
+    public void MoveAlongDoors(List<Door> doorsToMoveTo, StateAction.ActionCompletedHandler actionCompleted)
+    {
+        if (doorsToMoveTo.Count > 0)
+        {
+            Door nextDoor = doorsToMoveTo[0];
+            doorsToMoveTo.Remove(nextDoor);
+            Vector3 nextPosition = nextDoor.gameObject.transform.position;
+            nextPosition.y = 0;
+            StateAction.ActionCompletedHandler nextAction = () =>
+            {
+                MoveAlongDoors(doorsToMoveTo, actionCompleted);
+            };
+            StartCoroutine(MoveToAtSpeed(nextPosition, 1.0f, this.speed, nextAction));
+        }
+        else
+        {
+            actionCompleted();
+        }
     }
 
     private IEnumerator MoveToAtSpeed(Vector3 newPosition, float stoppingRadius, float speed, StateAction.ActionCompletedHandler actionCompleted)
     {
-        Vector3 direction = newPosition - gameObject.transform.position;
-        while (Vector3.Distance(gameObject.transform.position, newPosition) > stoppingRadius)
+        if (stuckAtZero)
         {
-            Vector3 nextPosition = gameObject.transform.position + speed*direction/30.0f;
+            //newPosition.y = 0;
+        }
+        Vector3 direction = newPosition - gameObject.transform.position;
+        while (Mathf.Abs(Vector3.Distance(gameObject.transform.position, newPosition)) > stoppingRadius)
+        {
+            Vector3 nextPosition = gameObject.transform.position + speed * direction / 30.0f;
             gameObject.transform.position = nextPosition;
             yield return new WaitForFixedUpdate();
         }

@@ -15,6 +15,7 @@ public class StateCharacter : StateObject {
 		state.AddState("Fear", emotionalState.z);
         state.AddState("Trust", emotionalState.w);
         state.AddState(Gun.StateName, 0);
+        this.stuckAtZero = true;
 	}
 
     public static void SetEmotionalState(string stateToChange, string field, float value, System.Collections.Generic.Dictionary<string, SmartState> globalState)

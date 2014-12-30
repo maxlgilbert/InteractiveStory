@@ -85,4 +85,57 @@ public class FixedRoom : FixedObject {
 
         return false;
     }
+
+    public List<Door> FindPath(int otherRoom)
+    {
+        List<Door> doorPath = new List<Door>();
+        Queue<RoomNode> roomQueue = new Queue<RoomNode>();
+        List<int> visitedRooms = new List<int>();
+        roomQueue.Enqueue(new RoomNode(this.roomNumber));
+        visitedRooms.Add(this.roomNumber);
+        RoomNode curr = null;
+        while (roomQueue.Count > 0)
+        {
+            curr = roomQueue.Dequeue();
+            if (curr.roomNumber == otherRoom)
+            {
+                break;
+            }
+            foreach (Door door in StateStory.Instance.fixedRooms[curr.roomNumber].doors)
+            {
+                int nextRoomNumber = door.roomOne;
+                if (nextRoomNumber == curr.roomNumber) nextRoomNumber = door.roomTwo;
+                RoomNode nextRoomNode = new RoomNode(nextRoomNumber);
+                nextRoomNode.parentDoor = door;
+                nextRoomNode.parentNode = curr;
+                if (!visitedRooms.Contains(nextRoomNumber))
+                {
+                    visitedRooms.Add(nextRoomNumber);
+                    roomQueue.Enqueue(nextRoomNode);
+                }
+            }
+
+
+        }
+        while (curr != null && curr.parentDoor != null)
+        {
+            doorPath.Add(curr.parentDoor);
+            curr = curr.parentNode;
+        }
+        doorPath.Reverse();
+        return doorPath;
+    }
+}
+
+public class RoomNode
+{
+    public int roomNumber;
+    public Door parentDoor;
+    public RoomNode parentNode;
+    public RoomNode(int number)
+    {
+        roomNumber = number;
+    }
+
+
 }

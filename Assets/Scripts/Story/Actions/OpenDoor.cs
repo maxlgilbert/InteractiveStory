@@ -77,10 +77,17 @@ public class OpenDoor : StateAction {
 		return returnString;
 	}
 
-    public override void EnactAction(List<StateObject> Actors, List<StateObject> Objects)
+    public override void EnactAction(string actionText)
     {
-        //ActionCompletedHandler actionCompleted = () => OnActionCompleted();
-        //Actors[0].WaitFor(2.0f, actionCompleted);
-        base.EnactAction(Actors, Objects);
+        ActionCompletedHandler actionCompleted = () => OnActionCompleted();
+        string[] actionWords = actionText.Split(new char[] { ' ', '.' });
+        StateObject doorToOpen = StateStory.Instance.GetStateObject(actionWords[2]);
+        Vector3 newDoorLocation = doorToOpen.gameObject.transform.position;
+        newDoorLocation.y -= 10.0f;
+        ActionCompletedHandler openDoor = () => doorToOpen.MoveToWithin(newDoorLocation, 1.0f, actionCompleted);
+        //doorToOpen.MoveToWithin(newDoorLocation, 1.0f, actionCompleted);
+        Vector3 goalPosition = doorToOpen.gameObject.transform.position;
+        goalPosition.y = 0;
+        StateStory.Instance.protagonist.MoveToWithin(goalPosition, 1.0f, openDoor);
     }
 }

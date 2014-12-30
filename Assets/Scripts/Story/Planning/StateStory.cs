@@ -139,12 +139,12 @@ public class StateStory : MonoBehaviour {
                 StateNode happyState = node as StateNode;
                 if (happyState.parentActions != null && happyState.parentActions.Count != 0)
                 {
-                    StateAction stateAction = GetAction(happyState.actionID);
+                    /*StateAction stateAction = GetAction(happyState.actionID);
                     List<StateObject> Actors = GetObjects(happyState.actionID);
-                    List<StateObject> Objects = new List<StateObject>();
+                    List<StateObject> Objects = new List<StateObject>();*/
                     //Actors.Add(protagonist);
                     //Actors.Add(_selectedObject);
-                    stateAction.EnactAction(Actors,Objects);
+                    //stateAction.EnactAction(Actors,Objects);
                 }
             }
         } 
@@ -193,9 +193,9 @@ public class StateStory : MonoBehaviour {
             if (happyState.actionID != ulong.MaxValue)
             {
                 StateAction stateAction = GetAction(happyState.actionID);
-                List<StateObject> Actors = GetObjects(happyState.actionID);
-                List<StateObject> Objects = new List<StateObject>();
-                stateAction.EnactAction(Actors, Objects);
+                /*List<StateObject> Actors = GetObjects(happyState.actionID);
+                List<StateObject> Objects = new List<StateObject>();*/
+                stateAction.EnactAction(happyState.parentActions[happyState.parentActions.Count - 1]);
             }
             else
             {
