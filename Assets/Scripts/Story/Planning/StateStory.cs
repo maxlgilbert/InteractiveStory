@@ -42,6 +42,8 @@ public class StateStory : MonoBehaviour {
 
 	private List<AStarNode> _plan;
     private int _currentPlanStep = 0 ;
+    public int achievedGoal;
+
 	public Material green;
 	public Material red;
 
@@ -56,6 +58,8 @@ public class StateStory : MonoBehaviour {
 	private bool _triedPlan = false;
 
     public GameObject intersectionPlane;
+
+    public bool reset;
 
 	void Awake() {
 		instance = this;
@@ -455,6 +459,7 @@ public class StateStory : MonoBehaviour {
     {
         clearPath();
         Dictionary<string, SmartState> startState = new Dictionary<string, SmartState>();
+       
 		foreach (StateObject stateObject in _stateObjects.Values) {
 			startState[stateObject.gameObject.name] = new SmartState(stateObject.state);
             //Debug.LogError(stateObject.gameObject.name);
@@ -476,6 +481,16 @@ public class StateStory : MonoBehaviour {
 			clearPath();
         }
         _currentPlanStep = 0;
+        StateNode finalStep  = _plan[_plan.Count - 1] as StateNode;
+        if (_goal.Equals(finalStep))
+        {
+            achievedGoal = 2;
+        }
+        else
+        {
+            achievedGoal = 1;
+        }
+        SavedData.globalState = finalStep.globalState;
         PlayNextAction();
 	}
 	

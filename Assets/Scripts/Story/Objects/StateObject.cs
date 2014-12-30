@@ -26,6 +26,8 @@ public class StateObject : StoryObject {
 
     public bool stuckAtZero;
 
+    protected float initialY;
+
     private Vector3 _previousPosition;
     void Awake()
     {
@@ -43,6 +45,7 @@ public class StateObject : StoryObject {
     {
         state.AddState("Room", roomNumber); //TODO Standardizes these strings somehow (static constant somewhere)
         StateStory.Instance.AddPossibleObject(this);
+        initialY = gameObject.transform.position.y;
         if (InScene)
         {
             StateStory.Instance.AddStateObject(this);
@@ -63,7 +66,9 @@ public class StateObject : StoryObject {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100,layerMask))
             {
-                gameObject.transform.position = hit.point;
+                Vector3 newPosition = hit.point;
+                newPosition.y = gameObject.transform.position.y;
+                gameObject.transform.position = newPosition;
             }
         }
     }
@@ -78,7 +83,9 @@ public class StateObject : StoryObject {
             //bool returnToPrevious = true;
             if (Physics.Raycast(ray, out hit, 100, layerMask))
             {
-                gameObject.transform.position = hit.point;
+                Vector3 newPosition = hit.point;
+                newPosition.y = gameObject.transform.position.y;
+                gameObject.transform.position = newPosition;
                 StoryObject receiver = hit.collider.gameObject.GetComponent<StoryObject>();
                 if (receiver.roomNumber == -1)
                 {
@@ -143,11 +150,11 @@ public class StateObject : StoryObject {
 	}
 
 	public void Select () {
-		gameObject.renderer.material = StateStory.Instance.green;
+		//gameObject.renderer.material = StateStory.Instance.green;
 	}
 
 	public void Deselect () {
-		gameObject.renderer.material = StateStory.Instance.red;
+		//gameObject.renderer.material = StateStory.Instance.red;
 	}
 
     public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted, List<int> roomsVisited = null)
@@ -234,7 +241,7 @@ public class StateObject : StoryObject {
     {
         if (stuckAtZero)
         {
-            //newPosition.y = 0;
+            newPosition.y = initialY;
         }
         Vector3 direction = newPosition - gameObject.transform.position;
         while (Mathf.Abs(Vector3.Distance(gameObject.transform.position, newPosition)) > stoppingRadius)

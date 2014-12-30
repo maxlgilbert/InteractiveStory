@@ -83,7 +83,7 @@ public class OpenDoor : StateAction {
         string[] actionWords = actionText.Split(new char[] { ' ', '.' });
         StateObject doorToOpen = StateStory.Instance.GetStateObject(actionWords[2]);
         Vector3 newDoorLocation = doorToOpen.gameObject.transform.position;
-        newDoorLocation.y -= 10.0f;
+        newDoorLocation.y += 4.0f;
         ActionCompletedHandler openDoor = () => doorToOpen.MoveToWithin(newDoorLocation, 1.0f, actionCompleted);
         //doorToOpen.MoveToWithin(newDoorLocation, 1.0f, actionCompleted);
         Vector3 goalPosition = doorToOpen.gameObject.transform.position;

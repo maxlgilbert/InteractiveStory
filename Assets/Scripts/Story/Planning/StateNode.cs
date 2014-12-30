@@ -20,7 +20,7 @@ public class StateNode : AStarNode {
 		foreach (string key in state.Keys) {
 			globalState[key] = new SmartState(state[key]);
 		}
-		stateName = "Protagonist";
+		stateName = "You";
 
 	}
 
