@@ -61,6 +61,10 @@ public class StateStory : MonoBehaviour {
 
     public bool reset;
 
+    public string goalObject;
+    public string goalField;
+    public float goalValue;
+
 	void Awake() {
 		instance = this;
 		_globalState = new Dictionary<string, Vector4> ();
@@ -212,8 +216,8 @@ public class StateStory : MonoBehaviour {
 	public string storyBoardText{
 		get {
 			string returnString = "";
-			returnString += "Goal: Get to a state of ";
-			returnString += StateToString(_goalMap);
+            returnString += "Goal: Get " + goalObject + "'s " + goalField + " field to a state of " + goalValue + "\n";
+            //returnString += _goal.globalState[goalObject].GetValue(goalField);//StateToString(_goalMap);
 			if (!_failedPath) {
 				string printState = "";
 				foreach (AStarNode node in _plan) {
@@ -462,14 +466,14 @@ public class StateStory : MonoBehaviour {
        
 		foreach (StateObject stateObject in _stateObjects.Values) {
 			startState[stateObject.gameObject.name] = new SmartState(stateObject.state);
-            //Debug.LogError(stateObject.gameObject.name);
+           // Debug.LogError(stateObject.gameObject.name);
             //Debug.LogError(stateObject.state.ToString());
 		}
         _start = new StateNode(startState);
 
         Dictionary<string,SmartState> goalState = new Dictionary<string,SmartState>();
-		goalState[protagonist.gameObject.name] = new SmartState();
-		goalState[protagonist.gameObject.name].SetState("Joy",5);
+		goalState[goalObject] = new SmartState();
+		goalState[goalObject].SetState(goalField,goalValue);
 		_goal = new StateNode(goalState);
 
 		UpdateNeighbors();
