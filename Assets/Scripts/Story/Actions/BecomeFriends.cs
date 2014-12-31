@@ -34,12 +34,12 @@ public class BecomeFriends : StateAction {
 
 
 
-        if (currState.globalState[currState.stateName].GetValue("Anger") <= 5 && currState.globalState[currState.stateName].GetValue("Trust")>= 5)
+        if (currState.globalState[currState.stateName].GetValue("Fear") <= 5 && currState.globalState[currState.stateName].GetValue("Joy")>= 5)
         {
 			for (int i = 0; i < StateStory.Instance.roles[Role.Character].Count; i++) {
 				string friendName = StateStory.Instance.roles[Role.Character][i].gameObject.name;
 				if (FixedRoom.RoomsConnected((int) currState.globalState[currState.stateName].GetValue("Room"),(int)currState.globalState[friendName].GetValue("Room"),currState.globalState, false)
-				    && currState.globalState[friendName].GetValue("Anger") <= 5 && currState.globalState[friendName].GetValue("Trust") >= 5)
+				    && currState.globalState[friendName].GetValue("Fear") <= 5 && currState.globalState[friendName].GetValue("Joy") >= 5)
                 {
 					neighbor = new StateNode(currState.globalState); /*Instantiate(StateStory.Instance.statePrefab,
 					                                 new Vector3(),
@@ -50,7 +50,7 @@ public class BecomeFriends : StateAction {
 					                                      currState.globalState[currState.stateName].w);*/
 
 
-                    StateCharacter.SetEmotionalState(currState.stateName, "Joy", 5f,neighbor.globalState);
+                    StateCharacter.SetEmotionalState(currState.stateName, "Trust", 5f,neighbor.globalState);
                     //neighbor.SetGlobalState(currState.stateName, "Anger", 0);
                     //neighbor.SetGlobalState(currState.stateName, "Fear", 0);
                     //neighbor.SetGlobalState(currState.stateName, "Trust", 0);
@@ -64,7 +64,7 @@ public class BecomeFriends : StateAction {
 
 
 
-                    StateCharacter.SetEmotionalState(friendName, "Joy", 5f, neighbor.globalState);
+                    StateCharacter.SetEmotionalState(friendName, "Trust", 5f, neighbor.globalState);
                     //neighbor.SetGlobalState(friendName, "Anger", 0);
                     //neighbor.SetGlobalState(friendName, "Fear", 0);
                     //neighbor.SetGlobalState(friendName, "Trust", 0);
@@ -95,13 +95,16 @@ public class BecomeFriends : StateAction {
 	public override string ToString ()
 	{
 		string returnString = gameObject.name + "\n";
-		returnString += "Requirements: anger less then 6 and trust greater than 4 for both characters.\n";
-		returnString += "Results: joy increases by 5 for both characters.";
+		returnString += "Requirements: fear less then 6 and joy greater than 4 for both characters.\n";
+		returnString += "Results: trust increases by 5 for both characters.";
 		return returnString;
 	}
 
     public override void EnactAction(string actionText)
     {
-        base.EnactAction(actionText);
+        string[] actionWords = actionText.Split(new char[] { ' ', '.' });
+        StateObject friend = StateStory.Instance.GetStateObject(actionWords[actionWords.Length - 1]);
+        Vector3 friendLocation = friend.gameObject.transform.position;
+        StateStory.Instance.protagonist.MoveToWithin(friendLocation, 1.0f, OnActionCompleted);
     }
 }

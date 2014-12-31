@@ -29,15 +29,18 @@ public class Door : StateObject
     }
     public static bool IsGuarded(string doorName, Dictionary<string, SmartState> globalState)
     {
-        List<StateObject> guards = StateStory.Instance.roles[Role.Guard];
-        for (int i = 0; i < guards.Count; i++)
+        List<StateObject> guards = new List<StateObject>();
+        if (StateStory.Instance.roles.TryGetValue(Role.Guard, out guards))
         {
-            string guardName = guards[i].gameObject.name;
-            int guardRoom = (int) globalState[guardName].GetValue("Room");
-            Door door = StateStory.Instance.GetStateObject(doorName) as Door;
-            if (guardRoom == door.roomOne || guardRoom == door.roomTwo)
+            for (int i = 0; i < guards.Count; i++)
             {
-                return true;
+                string guardName = guards[i].gameObject.name;
+                int guardRoom = (int)globalState[guardName].GetValue("Room");
+                Door door = StateStory.Instance.GetStateObject(doorName) as Door;
+                if (guardRoom == door.roomOne || guardRoom == door.roomTwo)
+                {
+                    return true;
+                }
             }
         }
         return false;

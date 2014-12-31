@@ -4,6 +4,7 @@ using System.Collections;
 public class LevelSelect : MonoBehaviour {
     public int level;
     public TextMesh text;
+    public bool start;
     // Use this for initialization
     void Start()
     {
@@ -16,24 +17,27 @@ public class LevelSelect : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (StateStory.Instance.achievedGoal == 2)
+        if (!start)
         {
-            renderer.enabled = true;
-            text.text = "Advance to chapter " + (level+1);
-        }
-        else if (StateStory.Instance.achievedGoal == 1)
-        {
-            renderer.enabled = true;
-            text.text = "Try chapter " + level + " again";
-        }
-        else
-        {
-            text.text = "";
+            if (StateStory.Instance.achievedGoal == 2)
+            {
+                renderer.enabled = true;
+                text.text = "Advance to chapter " + (level);
+            }
+            else if (StateStory.Instance.achievedGoal == 1)
+            {
+                renderer.enabled = true;
+                text.text = "Try chapter " + level + " again";
+            }
+            else
+            {
+                text.text = "";
+            }
         }
     }
     void OnMouseDown()
     {
-        if (StateStory.Instance.achievedGoal == 2)
+        if (start || StateStory.Instance.achievedGoal == 2)
         {
             audio.Play();
             Application.LoadLevel(level);

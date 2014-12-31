@@ -26,7 +26,7 @@ public class ActivateArtifact : StateAction {
                 for (int i = 0; i < characters.Count; i++)
                 {
                     string friendName = StateStory.Instance.roles[Role.Character][i].gameObject.name;
-                    if (currState.globalState[friendName].GetValue("Anger") <= 5 && currState.globalState[friendName].GetValue("Trust") >= 5) //TODO figure out interesting numbers
+                    if (currState.globalState[friendName].GetValue("Trust") >= 5) //TODO figure out interesting numbers
                     {
 
                         //Debug.LogError("here 3");
@@ -82,42 +82,46 @@ public class ActivateArtifact : StateAction {
                             }
                             else if (availableFriends.Count >= 1)
                             {
-                                for (int k = 0; k < availableFriends.Count; k++)
+
+                                if (protag.GetValue(Gun.StateName) == 1.0f)
                                 {
-                                    string friendName = availableFriends[k];
-                                    if (FixedRoom.RoomsConnected((int)currState.globalState[friendName].GetValue("Room"), artifactRoomNumber, currState.globalState, false))
+                                    for (int k = 0; k < availableFriends.Count; k++)
                                     {
-                                        neighbor = new StateNode(currState.globalState);
-
-                                        StateCharacter.SetGlobalState(artifacts[i].gameObject.name, AncientArtifact.StateName, 1.0f, neighbor.globalState);
-
-                                        neighbor.actions = StateStory.Instance.actions;
-
-                                        StateCharacter.SetEmotionalState(currState.stateName, "Joy", 5f, neighbor.globalState);
-
-                                        StateCharacter.SetGlobalState(friendName, "Joy", 0f, neighbor.globalState);
-                                        StateCharacter.SetGlobalState(friendName, "Anger", 0f, neighbor.globalState);
-                                        StateCharacter.SetGlobalState(friendName, "Fear", 0f, neighbor.globalState);
-                                        StateCharacter.SetGlobalState(friendName, "Trust", 0f, neighbor.globalState);
-
-                                        int numActions = 0;
-                                        for (int j = 0; j < curr.parentActions.Count; j++)
+                                        string friendName = availableFriends[k];
+                                        if (FixedRoom.RoomsConnected((int)currState.globalState[friendName].GetValue("Room"), artifactRoomNumber, currState.globalState, false))
                                         {
-                                            neighbor.parentActions.Add(curr.parentActions[j]);
-                                            if (curr.parentActions[j] == ("You sacrificed " + friendName + " and then " + this.GetActionText() + " " + artifacts[i].gameObject.name))
+                                            neighbor = new StateNode(currState.globalState);
+
+                                            StateCharacter.SetGlobalState(artifacts[i].gameObject.name, AncientArtifact.StateName, 1.0f, neighbor.globalState);
+
+                                            neighbor.actions = StateStory.Instance.actions;
+
+                                            StateCharacter.SetEmotionalState(currState.stateName, "Joy", 5f, neighbor.globalState);
+
+                                            StateCharacter.SetGlobalState(friendName, "Joy", 0f, neighbor.globalState);
+                                            StateCharacter.SetGlobalState(friendName, "Anger", 0f, neighbor.globalState);
+                                            StateCharacter.SetGlobalState(friendName, "Fear", 0f, neighbor.globalState);
+                                            StateCharacter.SetGlobalState(friendName, "Trust", 0f, neighbor.globalState);
+
+                                            int numActions = 0;
+                                            for (int j = 0; j < curr.parentActions.Count; j++)
                                             {
-                                                numActions++;
+                                                neighbor.parentActions.Add(curr.parentActions[j]);
+                                                if (curr.parentActions[j] == ("You sacrificed " + friendName + " and then " + this.GetActionText() + " " + artifacts[i].gameObject.name))
+                                                {
+                                                    numActions++;
+                                                }
+                                            }
+                                            if (numActions < this.numberAvailable)
+                                            {
+                                                neighbor.actionID = this.actionIndex;
+                                                neighbor.actionID |= StateStory.Instance.protagonist.objectIndex;
+                                                neighbor.parentActions.Add("You sacrificed " + friendName + " and then " + this.GetActionText() + " " + artifacts[i].gameObject.name);
+                                                _possibleNeighbors.Add(neighbor);
                                             }
                                         }
-                                        if (numActions < this.numberAvailable)
-                                        {
-                                            neighbor.actionID = this.actionIndex;
-                                            neighbor.actionID |= StateStory.Instance.protagonist.objectIndex;
-                                            neighbor.parentActions.Add("You sacrificed " + friendName + " and then " + this.GetActionText() + " " + artifacts[i].gameObject.name);
-                                            _possibleNeighbors.Add(neighbor);
-                                        }
-                                    }
 
+                                    }
                                 }
                             }
                         }
@@ -131,7 +135,7 @@ public class ActivateArtifact : StateAction {
 	public override string ToString ()
 	{
 		string returnString = gameObject.name + "\n";
-		returnString += "Requirements: three friends present, or the sacrifice of one friend.\n";
+		returnString += "Requirements: three friends present (trust greater than 5), or a gun.\n";
 		returnString += "Results: artifact activated.";
 		return returnString;
 	}
@@ -146,7 +150,15 @@ public class ActivateArtifact : StateAction {
         {
             StateObject sacrificialVictim = StateStory.Instance.GetStateObject(actionWords[2]);
             sacrificialVictim.MoveToWithin(artifact.gameObject.transform.position, 2.0f, doNothing);
-            StateStory.Instance.protagonist.MoveToWithin(artifact.gameObject.transform.position, 2.0f, actionCompleted);
+
+            Vector3 graveYard = StateStory.Instance.fixedRooms[-1].gameObject.transform.position;
+            graveYard.x += -.5f;
+            graveYard.z += -.8f;
+            ActionCompletedHandler shootFriend = () =>
+            {
+                sacrificialVictim.MoveToWithin(graveYard, 1.0f, OnActionCompleted, null, true);
+            };
+            StateStory.Instance.protagonist.MoveToWithin(artifact.gameObject.transform.position, 2.0f, shootFriend);
 
         }
         else

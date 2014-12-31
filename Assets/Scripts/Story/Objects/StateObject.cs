@@ -157,7 +157,7 @@ public class StateObject : StoryObject {
 		//gameObject.renderer.material = StateStory.Instance.red;
 	}
 
-    public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted, List<int> roomsVisited = null)
+    public void MoveToWithin(Vector3 newPosition, float stoppingRadius, StateAction.ActionCompletedHandler actionCompleted, List<int> roomsVisited = null, bool dead = false)
     {
         int layerMask = 1 << 9;
        // Ray ray =  Camera.main.ScreenPointToRay(newPosition);
@@ -172,7 +172,7 @@ public class StateObject : StoryObject {
         if (receiver != null)
         {
             FixedRoom targetRoom = StateStory.Instance.fixedRooms[receiver.roomNumber];
-            if (targetRoom.roomNumber != this.roomNumber)
+            if (targetRoom.roomNumber != this.roomNumber && !dead)
             {
                 FixedRoom currentRoom = StateStory.Instance.fixedRooms[this.roomNumber];
                 List<Door> doors = currentRoom.FindPath(targetRoom.roomNumber);
